@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Traductor_Pascal_C3D.traductor.reportes;
 
 using System.Diagnostics;
 using Traductor_Pascal_C3D.analizador;
@@ -15,6 +16,9 @@ namespace Traductor_Pascal_C3D
 {
     public partial class Form1 : Form
     {
+
+        Reporte reporte;
+
         public Form1()
         {
             InitializeComponent();
@@ -99,12 +103,16 @@ namespace Traductor_Pascal_C3D
             AddLineNumbers(Entrada, LinearNumberEntrada);
             AddLineNumbers(Salida, LinearNumberSalida);
             Entrada.Text = "program compiladores2;\nbegin\nend.";
+
+            reporte = new Reporte(Debugger);
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
             Debugger.Text = "";
-            Analizador analizador = new Analizador(Debugger, Salida);
+            Salida.Text = "";
+            reporte.limpiarLista();
+            Analizador analizador = new Analizador(Debugger, Salida, reporte);
             Debug.WriteLine("Iniciando Traducción");
             Debugger.AppendText("Iniciando Traducción\n");
             analizador.traducir(Entrada.Text);

@@ -365,12 +365,13 @@ namespace Traductor_Pascal_C3D.analizador
 
 
             Asignacion.Rule
-                                        = Identificador + Ds_Pts + Igual + Expresion_Cadena + Pt_Coma
+                                        = /*Identificador + Ds_Pts + Igual + Expresion_Cadena + Pt_Coma
                                         | Valor_Arreglo + Ds_Pts + Igual + Expresion_Cadena + Pt_Coma
                                         | Identificador + Pt + Identificador + Ds_Pts + Igual + Expresion_Cadena + Pt_Coma
                                         | Identificador + Pt + Identificador + Pt + Identificador + Ds_Pts + Igual + Expresion_Cadena + Pt_Coma
                                         | Identificador + Pt + Identificador + Pt + Identificador + Pt + Identificador + Ds_Pts + Igual + Expresion_Cadena + Pt_Coma
-
+                                        */
+                                        Expresion_Cadena + Ds_Pts + Igual + Expresion_Cadena + Pt_Coma
                                         ;
 
             /*Asignacion.ErrorRule

@@ -4,6 +4,8 @@ using System.Text;
 using System.Windows.Forms;
 using Irony.Parsing;
 using System.Diagnostics;
+using System.IO;
+using Traductor_Pascal_C3D.traductor.reportes;
 
 namespace Traductor_Pascal_C3D.analizador
 {
@@ -11,11 +13,13 @@ namespace Traductor_Pascal_C3D.analizador
     {
         RichTextBox debuggerConsole;
         RichTextBox Salida;
+        Reporte reporte;
 
-        public Analizador(RichTextBox debugger, RichTextBox Salida)
+        public Analizador(RichTextBox debugger, RichTextBox Salida, Reporte reporte)
         {
             this.debuggerConsole = debugger;
             this.Salida = Salida;
+            this.reporte = reporte;
         }
 
         public void traducir(string cadena)
@@ -58,6 +62,32 @@ namespace Traductor_Pascal_C3D.analizador
                 return;
             }
 
+            Traduccion traduccion = new Traduccion(raiz, Salida,reporte);
+            debuggerConsole.Text = "";
+            traduccion.iniciar();
+            //traduccion.traducir();
+            generarGrafo(raiz);
+
+        }
+
+        public void generarGrafo(ParseTreeNode raiz)
+        {
+
+            string grafoDot = Graficador.getDot(raiz);
+            string path = "C:\\compiladores2\\ast.txt";
+            try
+            {
+                using (FileStream fs = File.Create(path))
+                {
+                    byte[] info = new UTF8Encoding(true).GetBytes(grafoDot);
+                    fs.Write(info, 0, info.Length);
+                }
+                debuggerConsole.AppendText("Arbol generado!\n");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+            }
         }
 
 
