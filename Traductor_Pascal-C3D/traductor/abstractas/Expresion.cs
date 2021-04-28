@@ -8,10 +8,10 @@ namespace Traductor_Pascal_C3D.traductor.abstractas
 {
     abstract class Expresion
     {
-        string trueLabel;
-        string falseLabel;
-        int line;
-        int column;
+        public string trueLabel;
+        public string falseLabel;
+        public int line;
+        public int column;
 
         public Expresion(int line, int column)
         {

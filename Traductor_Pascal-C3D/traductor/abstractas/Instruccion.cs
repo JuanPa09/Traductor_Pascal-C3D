@@ -8,8 +8,8 @@ namespace Traductor_Pascal_C3D.traductor.abstractas
 {
     abstract class Instruccion
     {
-        int line;
-        int column;
+        public int line;
+        public int column;
         public Instruccion(int line, int column)
         {
             this.line = line;
@@ -17,6 +17,26 @@ namespace Traductor_Pascal_C3D.traductor.abstractas
         }
 
         public abstract object compile(Entorno entorno, Reporte reporte);
+
+        public bool sameType(utils.Type type1, utils.Type type2)
+        {
+            if(type1.type == type2.type)
+            {
+                if(type1.type == utils.Types.STRUCT)
+                {
+                    return type1.typeId.ToLower() == type2.typeId.ToLower();
+                }
+                return true;
+            }
+            else if(type1.type == utils.Types.STRUCT || type2.type == utils.Types.STRUCT)
+            {
+                if(type1.type == utils.Types.NULLL || type2.type == utils.Types.NULLL)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
 
     }
 }

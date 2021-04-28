@@ -2,22 +2,25 @@
 using System.Collections.Generic;
 using System.Text;
 using Traductor_Pascal_C3D.traductor.utils;
+using Traductor_Pascal_C3D.traductor.instruccion.funciones;
 
 namespace Traductor_Pascal_C3D.traductor.tablaSimbolos
 {
     class SymbolFunction
     {
-        utils.Type type;
+        public utils.Type type;
         string id;
-        string uniqueId;
-        int number;
+        public string uniqueId;
+        int size;
         LinkedList<Param> _params;
 
-        public SymbolFunction()
+        public SymbolFunction(FunctionSt func, string uniqueId)
         {
-            /*
-                FALTA CODIGO
-             */
+            this.type = func.type;
+            this.id = func.id;
+            this.size = func._params.Count;
+            this.uniqueId = uniqueId;
+            this._params = func._params;
         }
 
     }

@@ -561,7 +561,7 @@ namespace Traductor_Pascal_C3D.analizador
                                         | True
                                         | False
                                         | Expresion_Numerica + Pt + Expresion_Numerica
-                                       /*Tiene Ambiguedad*/ | Par_Izq + Expresion_Numerica + Par_Der
+                                   //    /*Tiene Ambiguedad*/ | Par_Izq + Expresion_Numerica + Par_Der
                                         //| Identificador + Cor_Izq + Indices_Array + Cor_Der
                                         ;
 

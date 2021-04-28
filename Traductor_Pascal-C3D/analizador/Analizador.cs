@@ -90,6 +90,44 @@ namespace Traductor_Pascal_C3D.analizador
             }
         }
 
+        public void reporteAst(string cadena)
+        {
+            try
+            {
+                Gramatica gramatica = new Gramatica();
+                LanguageData lenguaje = new LanguageData(gramatica);
+                foreach (var item in lenguaje.Errors)
+                {
+                    Debug.WriteLine(item);
+                }
+
+                Parser parser = new Parser(lenguaje);
+                ParseTree arbol = parser.Parse(cadena);
+                ParseTreeNode raiz = arbol.Root;
+
+                generarGrafo(raiz);
+
+
+                Process cmd = new Process();
+                cmd.StartInfo.FileName = "cmd.exe";
+                cmd.StartInfo.RedirectStandardInput = true;
+                cmd.StartInfo.RedirectStandardOutput = true;
+                cmd.StartInfo.CreateNoWindow = true;
+                cmd.StartInfo.UseShellExecute = false;
+                cmd.Start();
+                cmd.StandardInput.WriteLine("cd C:\\compiladores2");
+                cmd.StandardInput.WriteLine("dot -Tsvg ast.txt -o ast.svg");
+                cmd.Close();
+
+
+            }
+            catch (Exception ex)
+            {
+                this.debuggerConsole.Text = ex.Message;
+            }
+
+
+        }
 
     }
 }

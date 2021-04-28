@@ -23,10 +23,50 @@ namespace Traductor_Pascal_C3D.traductor.instruccion.funciones
 
         public override object compile(Entorno entorno, Reporte reporte)
         {
+            LinkedList<Instruccion> variables = new LinkedList<Instruccion>();
             Generador generador = Generador.getInstance();
 
+            generador.addNativaPrint();
+            generador.addNativaCompareString();
+            
+            foreach (Instruccion instruccion in instruccionesHead)
+            {
+                if (instruccion != null)
+                {
+                    try
+                    {
+                        
+                        if(instruccion.GetType().Name == "DeclararVariables")
+                        {
+                            variables.AddLast(instruccion);
+                        }
+                        else
+                        {
+                            instruccion.compile(entorno, reporte);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine(ex.ToString());
+                    }
+                }
+            }
 
-            foreach(Instruccion instruccion in instruccionesBody)
+
+            generador.addStartFunc("main", "void");
+
+            foreach(Instruccion instruccion in variables)
+            {
+                try
+                {
+                    instruccion.compile(entorno,reporte);
+                }catch(Exception ex)
+                {
+                    Debug.WriteLine(ex.ToString());
+                }
+            }
+
+            foreach (Instruccion instruccion in instruccionesBody)
             {
                 if (instruccion != null)
                 {
@@ -40,22 +80,7 @@ namespace Traductor_Pascal_C3D.traductor.instruccion.funciones
                     }
                 }
             }
-
-
-            generador.addStartFunc("main", "void");
-            foreach(Instruccion instruccion in instruccionesHead)
-            {
-                if(instruccion != null)
-                {
-                    try
-                    {
-                        instruccion.compile(entorno, reporte);
-                    }catch(Exception ex)
-                    {
-                        Debug.WriteLine(ex.ToString());
-                    }
-                }
-            }
+            generador.addReturn("");
             generador.addEndFunc();
 
             return null;

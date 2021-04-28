@@ -11,13 +11,24 @@ namespace Traductor_Pascal_C3D.traductor.reportes
         List<Formato> lista;
         List<FormatoSimbolos> simbolos;
         RichTextBox debugger;
+        private static Reporte reporte;
 
-        public Reporte(RichTextBox debugger)
+        private Reporte(RichTextBox debugger)
         {
             this.debugger = debugger;
             lista = new List<Formato>();
             simbolos = new List<FormatoSimbolos>();
         }
+
+        public static Reporte getInstance(RichTextBox debugger = null)
+        {
+            if (reporte == null)
+            {
+                reporte = new Reporte(debugger);
+            }
+            return reporte;
+        }
+
 
         public void limpiarLista()
         {

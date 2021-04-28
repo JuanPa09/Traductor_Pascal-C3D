@@ -6,13 +6,15 @@ namespace Traductor_Pascal_C3D.traductor.utils
 {
     class Param
     {
-        string id;
-        utils.Type type;
+        public string id;
+        public utils.Type type;
+        public bool isRef;
 
-        public Param(string id, utils.Type type)
+        public Param(string id, utils.Type type, bool isRef = false)
         {
             this.id = id.ToLower();
             this.type = type;
+            this.isRef = isRef;
         }
 
         public string getUnicType()

@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Traductor_Pascal_C3D.traductor.reportes;
-
+using Traductor_Pascal_C3D.traductor.generador;
 using System.Diagnostics;
 using Traductor_Pascal_C3D.analizador;
 
@@ -104,14 +104,17 @@ namespace Traductor_Pascal_C3D
             AddLineNumbers(Salida, LinearNumberSalida);
             Entrada.Text = "program compiladores2;\nbegin\nend.";
 
-            reporte = new Reporte(Debugger);
+            reporte = Reporte.getInstance(this.Debugger);
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
+            reporte.limpiarLista();
             Debugger.Text = "";
             Salida.Text = "";
             reporte.limpiarLista();
+            Generador generador = Generador.getInstance();
+            generador.clearCode();
             Analizador analizador = new Analizador(Debugger, Salida, reporte);
             Debug.WriteLine("Iniciando Traducción");
             Debugger.AppendText("Iniciando Traducción\n");
@@ -119,6 +122,22 @@ namespace Traductor_Pascal_C3D
             Debugger.AppendText("Finalizando Traducción");
             Debug.WriteLine("Finalizando Traducción");
             
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            reporte.limpiarLista();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            Analizador analizador = new Analizador(this.Debugger, Salida, reporte);
+            analizador.reporteAst(Entrada.Text);
         }
     }
 }

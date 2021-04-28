@@ -14,8 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="traductor\instruccion\control\" />
-    <Folder Include="traductor\instruccion\variables\" />
     <Folder Include="traductor\instruccion\transferencia\" />
   </ItemGroup>
 
