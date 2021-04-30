@@ -139,5 +139,11 @@ namespace Traductor_Pascal_C3D
             Analizador analizador = new Analizador(this.Debugger, Salida, reporte);
             analizador.reporteAst(Entrada.Text);
         }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            Salida.Focus();
+            Salida.SelectAll();
+        }
     }
 }

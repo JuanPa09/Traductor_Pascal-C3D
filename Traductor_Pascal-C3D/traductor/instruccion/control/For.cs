@@ -39,6 +39,9 @@ namespace Traductor_Pascal_C3D.traductor.instruccion.control
                 string temp = generador.newTemporal();
                 string recursiva = generador.newLabel();
                 string salida = generador.newLabel();
+                string continueLbl = generador.newLabel();
+                entorno.newBreak(salida);
+                entorno.newContinue(continueLbl);
                 Simbolo sym = entorno.addVar(id, valorInicial.type, false, false);
 
                 generador.addComment("Empieza For");
@@ -57,6 +60,7 @@ namespace Traductor_Pascal_C3D.traductor.instruccion.control
                 {
                     instruccion.compile(entorno, reporte);
                 }
+                generador.addLabel(continueLbl);
                 generador.addGetStack(temp, sym.position.ToString());
                 if (tipo.ToLower() == "to")
                 {

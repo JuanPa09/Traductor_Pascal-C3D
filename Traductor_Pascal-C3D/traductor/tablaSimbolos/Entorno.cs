@@ -12,10 +12,14 @@ namespace Traductor_Pascal_C3D.traductor.tablaSimbolos
         public Dictionary<string, Simbolo> vars;
         public Entorno anterior = null;
         public int size;
-        public string _break = null;
-        public string _continue = null;
+        /*public string _break = null;
+        public string _continue = null;*/
         public string _return = null;
         public string prop = null;
+
+        public LinkedList<string> _break;
+        public LinkedList<string> _continue;
+
         public SymbolFunction actualFunc = null;
 
         public Entorno(Entorno anterior)
@@ -25,9 +29,9 @@ namespace Traductor_Pascal_C3D.traductor.tablaSimbolos
             this.structs = new Dictionary<string, SymbolStruct>();
             this.vars = new Dictionary<string, Simbolo>();
             this.size = (anterior != null?anterior.size:0);
-            this._break = (anterior != null ? anterior._break : null);
+            this._break = (anterior != null ? anterior._break : new LinkedList<string>());
             this._return = (anterior != null ? anterior._return : null);
-            this._continue = (anterior != null ? anterior._continue : null);
+            this._continue = (anterior != null ? anterior._continue : new LinkedList<string>());
             this.prop = "main";
             this.actualFunc = (anterior != null ? anterior.actualFunc : null);
         }
@@ -119,5 +123,48 @@ namespace Traductor_Pascal_C3D.traductor.tablaSimbolos
             }
             return null;
         }
+
+        public void newBreak(string _breakLbl)
+        {
+            this._break.AddFirst(_breakLbl);
+        }
+
+        public string getBreak()
+        {
+            Entorno actual = this;
+            while(actual!=null)
+            {
+                if(actual._break.Count != 0)
+                {
+                    string retornar = actual._break.First.Value;
+                    actual._break.RemoveFirst();
+                    return retornar;
+                }
+                actual = actual.anterior;
+            }
+            return null;
+        }
+
+        public void newContinue(string _continueLbl)
+        {
+            this._continue.AddFirst(_continueLbl);
+        }
+
+        public string getContinue()
+        {
+            Entorno actual = this;
+            while (actual != null)
+            {
+                if (actual._continue.Count != 0)
+                {
+                    string retornar = actual._continue.First.Value;
+                    actual._continue.RemoveFirst();
+                    return retornar;
+                }
+                actual = actual.anterior;
+            }
+            return null;
+        }
+
     }
 }

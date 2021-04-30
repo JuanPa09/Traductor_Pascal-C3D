@@ -23,9 +23,11 @@ namespace Traductor_Pascal_C3D.traductor.instruccion.control
         public override object compile(Entorno entorno, Reporte reporte)
         {
             Generador generator = Generador.getInstance();
-            generator.addComment("Inicia Repeat");
-            entorno._continue = this.condicion.trueLabel = generator.newLabel();
-            entorno._break = this.condicion.falseLabel = generator.newLabel();
+            generator.addComment("Inicia While");
+            this.condicion.trueLabel = generator.newLabel();
+            this.condicion.falseLabel = generator.newLabel();
+            entorno.newContinue(this.condicion.trueLabel);
+            entorno.newBreak(this.condicion.falseLabel);
             generator.addLabel(this.condicion.trueLabel);
             foreach(Instruccion instruccion in instrucciones)
             {
@@ -35,7 +37,7 @@ namespace Traductor_Pascal_C3D.traductor.instruccion.control
             if (condition.type.type == Types.BOOLEAN)
             {
                 generator.addLabel(condition.falseLabel);
-                generator.addComment("Finaliza Repeat");
+                generator.addComment("Finaliza While");
                 return null;
             }
             throw new ErroPascal(this.line, this.column, "La condicion no es booleana", "Semantico");

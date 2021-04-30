@@ -41,6 +41,7 @@ namespace Traductor_Pascal_C3D
             this.Debugger = new System.Windows.Forms.RichTextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
+            this.button5 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // button1
@@ -175,11 +176,22 @@ namespace Traductor_Pascal_C3D
             this.label3.TabIndex = 11;
             this.label3.Text = "Consola:";
             // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(875, 27);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(120, 23);
+            this.button5.TabIndex = 12;
+            this.button5.Text = "Seleccionar Todo";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1007, 735);
+            this.Controls.Add(this.button5);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.Debugger);
@@ -214,6 +226,7 @@ namespace Traductor_Pascal_C3D
         private System.Windows.Forms.RichTextBox Debugger;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button button5;
     }
 }
 

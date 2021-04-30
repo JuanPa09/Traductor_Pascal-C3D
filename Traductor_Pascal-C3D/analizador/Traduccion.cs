@@ -18,6 +18,7 @@ using Traductor_Pascal_C3D.traductor.variables;
 using Type = Traductor_Pascal_C3D.traductor.utils.Type;
 using Traductor_Pascal_C3D.traductor.expresion.access;
 using Traductor_Pascal_C3D.traductor.expresion.assignment;
+using Traductor_Pascal_C3D.traductor.instruccion.transferencia;
 
 namespace Traductor_Pascal_C3D.analizador
 {
@@ -142,11 +143,17 @@ namespace Traductor_Pascal_C3D.analizador
                 case "Funcion":
                     return evaluarFuncion(actual.ChildNodes[0]);
                 case "Procedimiento":
+                    return evaluarProcedimiento(actual.ChildNodes[0]);
                 case "Llamada":
                     return evaluarNuevaLlamada(actual.ChildNodes[0]);
                 case "break":
+                    return new Break(actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
                 case "continue":
+                    return new Continue(actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
                 case "exit":
+                    if (actual.ChildNodes.Count == 5)
+                        return new Return(actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column, expresionCadena(actual.ChildNodes[2]));
+                    return new Return(actual.Token.Location.Line, actual.Token.Location.Column);
                 case "graficar_ts":
                     return null;
 
@@ -237,6 +244,7 @@ namespace Traductor_Pascal_C3D.analizador
 
         }
 
+
         public void entradaFuncion(ParseTreeNode actual, ref LinkedList<Expresion> valores)
         {
 
@@ -267,6 +275,30 @@ namespace Traductor_Pascal_C3D.analizador
                     break;
             }
         }
+
+        public FunctionSt evaluarProcedimiento(ParseTreeNode actual)
+        {
+            Dictionary<string, Instruccion> paramsValor = new Dictionary<string, Instruccion>();
+            Dictionary<string, Instruccion> paramsRef = new Dictionary<string, Instruccion>();
+            Dictionary<int, string> orden = new Dictionary<int, string>();
+            LinkedList<Type> paramsTipos = new LinkedList<Type>();
+            LinkedList<Param> @params = new LinkedList<Param>();
+
+            switch (actual.ChildNodes.Count)
+            {
+                case 11:
+                    parametrosFuncion(actual.ChildNodes[3], ref paramsValor, ref paramsRef, ref paramsTipos, ref orden, 1,ref @params);
+                    return crearProcedimiento(actual.ChildNodes[1].Token.Text, paramsValor, paramsRef, instrucciones(actual.ChildNodes[6]), instrucciones(actual.ChildNodes[8]), paramsTipos, orden, @params);//NuevoProcedimiento(actual.ChildNodes[1].Token.Text, crearProcedimiento(actual.ChildNodes[1].Token.Text, paramsValor, paramsRef, instrucciones(actual.ChildNodes[6]), instrucciones(actual.ChildNodes[8]), paramsTipos, orden), actual.ChildNodes[1].Token.Location.Line, actual.ChildNodes[1].Token.Location.Column);
+                default:
+                    return crearProcedimiento(actual.ChildNodes[0].Token.Text,paramsValor,paramsRef, instrucciones(actual.ChildNodes[3]), instrucciones(actual.ChildNodes[5]),paramsTipos,orden,@params); //NuevoProcedimiento(actual.ChildNodes[1].Token.Text, crearProcedimiento(actual.ChildNodes[1].Token.Text, paramsValor, paramsRef, instrucciones(actual.ChildNodes[3]), instrucciones(actual.ChildNodes[5]), paramsTipos, orden), actual.ChildNodes[1].Token.Location.Line, actual.ChildNodes[1].Token.Location.Column);
+            }
+        }
+
+        public FunctionSt crearProcedimiento(string nombre, Dictionary<string, Instruccion> paramsValor, Dictionary<string, Instruccion> paramsRef, LinkedList<Instruccion> head, LinkedList<Instruccion> body, LinkedList<Type> paramsTipos, Dictionary<int, string> orden,LinkedList<Param> @params)
+        {
+            return new FunctionSt(nombre, @params, new Type(Types.NULLL, ""), head, body, true, 0, 0);
+        }
+
 
         /* *************************     Variables    ******************************/
 
@@ -559,13 +591,13 @@ namespace Traductor_Pascal_C3D.analizador
             else
             {
                 Debug.WriteLine(actual.ChildNodes[0].Term.ToString());
-                line = actual.ChildNodes[0].Token.Location.Line;
-                column = actual.ChildNodes[0].Token.Location.Column;
                 //Verificar el tipo y no solo poner la n porque pueden venir strings o bools
                 switch (actual.ChildNodes[0].Term.ToString())
                 {
                     case "DOUBLE":
                         //return new Literal('D', actual.ChildNodes[0].Token.Text);
+                        line = actual.ChildNodes[0].Token.Location.Line;
+                        column = actual.ChildNodes[0].Token.Location.Column;
                         return new Primitivo(Types.DOUBLE, actual.ChildNodes[0].Token.Text,line,column);
 
                     case "ID":
@@ -573,13 +605,21 @@ namespace Traductor_Pascal_C3D.analizador
                         return new AccessId(actual.ChildNodes[0].Token.Text, null, line, column);
                     case "Llamada":
                         //return new ObtenerLlamada(evaluarNuevaLlamada(actual.ChildNodes[0]));
+                        actual = actual.ChildNodes[0];
+                        LinkedList<Expresion> @params = new LinkedList<Expresion>();
+                        entradaFuncion(actual.ChildNodes[2], ref @params);
+                        return new AssignmentFunc(actual.ChildNodes[0].Token.Text, null, @params, 0, 0);
                     case "Valor_Arreglo":
                         //actual = actual.ChildNodes[0];
                         //return new ObtenerArreglo(actual.ChildNodes[0].Token.Text, getIndicesArray(actual.ChildNodes[2], new LinkedList<Expresion>())); ;
                         return null;
                     case "true":
+                        line = actual.ChildNodes[0].Token.Location.Line;
+                        column = actual.ChildNodes[0].Token.Location.Column;
                         return new Primitivo(Types.BOOLEAN, "true", line, column);
                     case "false":
+                        line = actual.ChildNodes[0].Token.Location.Line;
+                        column = actual.ChildNodes[0].Token.Location.Column;
                         return new Primitivo(Types.BOOLEAN, "false", line, column);
                     default:
                         // Es INT
@@ -655,11 +695,15 @@ namespace Traductor_Pascal_C3D.analizador
                 case 3:
                     // Llevan Or o And
                     //return new RelacionalMultiple(evaluarExpresionLogica(actual.ChildNodes[0]), evaluarExpresionLogica(actual.ChildNodes[2]), actual.ChildNodes[1].Token.Text);
-                    return null;
+                    int line = actual.ChildNodes[1].Token.Location.Line;
+                    int column = actual.ChildNodes[1].Token.Location.Column;
+                    if (actual.ChildNodes[1].Token.Text.ToLower() == "and")
+                        return new And(evaluarExpresionLogica(actual.ChildNodes[0]), evaluarExpresionLogica(actual.ChildNodes[2]), line, column);
+                    return new Or(evaluarExpresionLogica(actual.ChildNodes[0]), evaluarExpresionLogica(actual.ChildNodes[2]), line, column);
                 case 2:
                     // Tiene operador Not
                     //return new Not(evaluarExpresionLogica(actual.ChildNodes[1]));
-                    return null;
+                    return new Not(evaluarExpresionLogica(actual.ChildNodes[1]), actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
                 case 1:
                     // Tiene Expresion Relacional
                     return evaluarExpresionRelacional(actual.ChildNodes[0]);
@@ -687,6 +731,8 @@ namespace Traductor_Pascal_C3D.analizador
                             return new Menor(false, evaluarExpresionNumerica(actual.ChildNodes[0]), evaluarExpresionNumerica(actual.ChildNodes[2]), line, column);
                         case "<=":
                             return new Menor(true, evaluarExpresionNumerica(actual.ChildNodes[0]), evaluarExpresionNumerica(actual.ChildNodes[2]), line, column);
+                        case "<>":
+                            return new NoIgual(evaluarExpresionNumerica(actual.ChildNodes[0]), evaluarExpresionNumerica(actual.ChildNodes[2]), line, column);
                         default:
                             return null;
                     }
@@ -702,7 +748,9 @@ namespace Traductor_Pascal_C3D.analizador
                         return new Menor(false, expresionCadena(actual.ChildNodes[0]), expresionCadena(actual.ChildNodes[2]), line, column);
                     case "<=":
                         return new Menor(true, expresionCadena(actual.ChildNodes[0]), expresionCadena(actual.ChildNodes[2]), line, column);
-
+                    case "<>":
+                        return new NoIgual(expresionCadena(actual.ChildNodes[0]), expresionCadena(actual.ChildNodes[2]), line, column);
+                        
                     default:
                         return null;
                 }

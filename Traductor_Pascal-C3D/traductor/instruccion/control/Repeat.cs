@@ -24,8 +24,10 @@ namespace Traductor_Pascal_C3D.traductor.instruccion.control
         {
             Generador generador = Generador.getInstance();
             generador.addComment("Inicia Repeat");
-            entorno._continue = this.condition.falseLabel = generador.newLabel();
-            entorno._break = this.condition.trueLabel = generador.newLabel();
+            this.condition.falseLabel = generador.newLabel();
+            this.condition.trueLabel = generador.newLabel();
+            entorno.newBreak(this.condition.falseLabel);
+            entorno.newContinue(this.condition.trueLabel);
             generador.addLabel(this.condition.falseLabel);
             foreach(Instruccion instruccion in instrucciones)
             {
