@@ -7,6 +7,9 @@ using Traductor_Pascal_C3D.traductor.tablaSimbolos;
 using Traductor_Pascal_C3D.traductor.generador;
 using Traductor_Pascal_C3D.traductor.reportes;
 using System.Diagnostics;
+using Traductor_Pascal_C3D.traductor.expresion.assignment;
+using Traductor_Pascal_C3D.traductor.variables;
+using Traductor_Pascal_C3D.traductor.expresion.literal;
 
 namespace Traductor_Pascal_C3D.traductor.instruccion.control
 {
@@ -33,6 +36,8 @@ namespace Traductor_Pascal_C3D.traductor.instruccion.control
             {
                 Generador generador = Generador.getInstance();
                 Retorno valorInicial = this.valInicio.compile(entorno);
+                //Asignacion asignacion = new Asignacion(new AssignmentId(this.id, null, this.line, this.column),valInicio, this.line, this.column);
+                //asignacion.compile(entorno,reporte);
                 Retorno valorFinal = this.valFinal.compile(entorno);
                 if(valorInicial.type.type != Types.NUMBER || valorFinal.type.type != Types.NUMBER)
                     throw new ErroPascal(0, 0, "No se puede evaluar la sentencia for porque \"" + valorInicial.value + "\" y/o \"" + valorFinal.value + "\" no coinciden con tipo numero", "Semantico");
@@ -42,7 +47,7 @@ namespace Traductor_Pascal_C3D.traductor.instruccion.control
                 string continueLbl = generador.newLabel();
                 entorno.newBreak(salida);
                 entorno.newContinue(continueLbl);
-                Simbolo sym = entorno.addVar(id, valorInicial.type, false, false);
+                Simbolo sym = entorno.getVar(id);//entorno.addVar(id, valorInicial.type, false, false);
 
                 generador.addComment("Empieza For");
                 generador.addSetStack(sym.position.ToString(), valorInicial.value);
@@ -70,6 +75,8 @@ namespace Traductor_Pascal_C3D.traductor.instruccion.control
                 {
                     generador.addExpression(temp, temp, "1", "-");
                 }
+                Asignacion asignacion = new Asignacion(new AssignmentId(id, null, this.line, this.column), new Primitivo(Types.NUMBER, temp, this.line, this.column), this.line, this.column);
+                asignacion.compile(entorno, reporte);
                 generador.addSetStack(sym.position.ToString(), temp);
                 generador.addGoto(recursiva);
                 generador.addLabel(salida);

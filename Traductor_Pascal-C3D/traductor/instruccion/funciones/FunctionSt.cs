@@ -73,6 +73,10 @@ namespace Traductor_Pascal_C3D.traductor.instruccion.funciones
                 {
                     try
                     {
+                        if (instruccion.GetType().Name == "DeclararVariables")
+                        {
+                            instruccion.compile(nuevoEntorno, reporte); //Se compila una vez para guardar las variables, esto sirve en Estructura.cs para que las variables aparezcan dentro del metodo main
+                        }
                         instruccion.compile(nuevoEntorno, reporte);
                     }
                     catch (Exception ex)
@@ -92,6 +96,7 @@ namespace Traductor_Pascal_C3D.traductor.instruccion.funciones
                     }
                 }
                 generator.addLabel(returnLbl);
+                
                 generator.addReturn("");
                 generator.addEndFunc();
                 generator.setTempStorage(tempStorage);

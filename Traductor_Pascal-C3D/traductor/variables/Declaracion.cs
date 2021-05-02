@@ -16,86 +16,118 @@ namespace Traductor_Pascal_C3D.traductor.variables
         private LinkedList<string> idList;
         private Expresion value;
 
+
+        /*Para la generacion del codigo*/
+        string label = null;
+        bool procesada = false;
+        bool error = false;
+        LinkedList<Simbolo> _newVar;
+        Retorno _value;
+
         public Declaracion(utils.Type type, LinkedList<string> idList, Expresion value, int line, int column):base(line,column)
         {
             this.type = type;
             this.idList = idList;
-            this.value = value;
+            this.value = value == null && type.type == Types.STRUCT ? new NewStruct(type.typeId, this.line, this.column) : value;
             this.line = line;
+
+            _newVar = new LinkedList<Simbolo>();
         }
 
         public override object compile(Entorno entorno, Reporte reporte)
         {
             Generador generador = Generador.getInstance();
 
-            if(this.value == null)
+            if (!procesada)
             {
-                switch(this.type.type)
+                this.procesada = true;
+                if (this.value == null)
                 {
-                    case Types.NUMBER:
-                        this.value = new Primitivo(this.type.type, 0, line, column);
-                        break;
-                    case Types.DOUBLE:
-                        this.value = new Primitivo(this.type.type, 0.0, line, column);
-                        break;
-                    case Types.BOOLEAN:
-                        this.value = new Primitivo(this.type.type, true, line, column);
-                        break;
-                    case Types.STRING:
-                        this.value = new Primitivo(this.type.type, "", line, column);
-                        break;
-                }
-            }
-
-            Retorno value = this.value!=null?this.value.compile(entorno):new Retorno("",false,this.type);
-            if(!this.sameType(this.type,value.type))
-            {
-                throw new ErroPascal(this.line, this.column, "Tipos De Datos Diferentes " + this.type + ", " + value.type, "Semántico");
-            }
-            this.validateType(entorno);
-            foreach(string id in idList)
-            {
-                Simbolo newVar = entorno.addVar(id, value.type.type == Types.NULLL ? this.type : value.type, false, false);
-                if (newVar == null)
-                    throw new ErroPascal(this.line, this.column, "La variable " + id + " ya existe en este ambito", "Semántico");
-
-                if (newVar.isGlobal)
-                {
-                    if(this.type.type == Types.BOOLEAN)
+                    switch (this.type.type)
                     {
-                        string tempLabel = generador.newLabel();
-                        generador.addLabel(value.trueLabel);
-                        generador.addSetStack(newVar.position.ToString(),"1");
-                        generador.addGoto(tempLabel);
-                        generador.addLabel(value.falseLabel);
-                        generador.addSetStack(newVar.position.ToString(),"0");
-                        generador.addLabel(tempLabel);
+                        case Types.NUMBER:
+                            this.value = new Primitivo(this.type.type, 0, line, column);
+                            break;
+                        case Types.DOUBLE:
+                            this.value = new Primitivo(this.type.type, 0.0, line, column);
+                            break;
+                        case Types.BOOLEAN:
+                            this.value = new Primitivo(this.type.type, false, line, column);
+                            break;
+                        case Types.STRING:
+                            this.value = new Primitivo(this.type.type, "", line, column);
+                            break;
+                    }
+                }
+
+                Retorno value = this.value != null ? this.value.compile(entorno) : new Retorno("", false, this.type);
+                
+                if (value.type.type == Types.BOOLEAN)    /////////////////
+                    this.label = generador.removeLast();
+
+                if (!this.sameType(this.type, value.type))
+                {
+                    error = true;
+                    throw new ErroPascal(this.line, this.column, "Tipos De Datos Diferentes " + this.type + ", " + value.type, "Semántico");
+                }
+                this._value = value;
+                this.validateType(entorno);
+                foreach (string id in idList)
+                {
+                    Simbolo newVar = entorno.addVar(id, value.type.type == Types.NULLL ? this.type : value.type, false, false);
+                    if (newVar == null)
+                    {
+                        error = true;
+                        throw new ErroPascal(this.line, this.column, "La variable " + id + " ya existe en este ambito", "Semántico");
+                    }
+                    this._newVar.AddLast(newVar);
+                    /*if (newVar.isGlobal)
+                    {
+                        if(this.type.type == Types.BOOLEAN)
+                        {
+                            string tempLabel = generador.newLabel();
+                            generador.addLabel(value.trueLabel);
+                            generador.addSetStack(newVar.position.ToString(),"1");
+                            generador.addGoto(tempLabel);
+                            generador.addLabel(value.falseLabel);
+                            generador.addSetStack(newVar.position.ToString(),"0");
+                            generador.addLabel(tempLabel);
+                        }
+                        else
+                        {
+                            generador.addSetStack(newVar.position.ToString(), value.getValue());
+                        }
                     }
                     else
                     {
-                        generador.addSetStack(newVar.position.ToString(), value.getValue());
-                    }
-                }
-                else
-                {
-                    string temp = generador.newTemporal();
-                    generador.freeTemp(temp);
-                    if(this.type.type == Types.BOOLEAN)
-                    {
-                        string tmplabel = generador.newLabel();
-                        generador.addLabel(value.trueLabel);
-                        generador.addSetStack(temp, "1");
-                        generador.addGoto(tmplabel);
-                        generador.addLabel(value.falseLabel);
-                        generador.addSetStack(temp, "0");
-                        generador.addLabel(tmplabel);
-                    }
-                    else
-                    {
-                        generador.addSetStack(temp, value.getValue());
-                    }
-                }
+                        string temp = generador.newTemporal();
+                        generador.freeTemp(temp);
+                        if(this.type.type == Types.BOOLEAN)
+                        {
+                            string tmplabel = generador.newLabel();
+                            generador.addLabel(value.trueLabel);
+                            generador.addSetStack(temp, "1");
+                            generador.addGoto(tmplabel);
+                            generador.addLabel(value.falseLabel);
+                            generador.addSetStack(temp, "0");
+                            generador.addLabel(tmplabel);
+                        }
+                        else
+                        {
+                            generador.addSetStack(temp, value.getValue());
+                        }
+                    }*/
 
+                }
+            }
+            else
+            {
+                if (!error)
+                {
+                    if (label != null)
+                        generador.addCode(label);
+                    generarCodigo();
+                }
             }
 
             return null;
@@ -113,5 +145,51 @@ namespace Traductor_Pascal_C3D.traductor.variables
                 this.type._struct = _struct;
             }
         }
+
+        private void generarCodigo()
+        {
+            Generador generador = Generador.getInstance();
+            foreach(Simbolo newVar in _newVar)
+            {
+                if (newVar.isGlobal)
+                {
+                    if (this.type.type == Types.BOOLEAN)
+                    {
+                        string tempLabel = generador.newLabel();
+                        generador.addLabel(_value.trueLabel);
+                        generador.addSetStack(newVar.position.ToString(), "1");
+                        generador.addGoto(tempLabel);
+                        generador.addLabel(value.falseLabel);
+                        generador.addSetStack(newVar.position.ToString(), "0");
+                        generador.addLabel(tempLabel);
+                    }
+                    else
+                    {
+                        generador.addSetStack(newVar.position.ToString(), _value.getValue());
+                    }
+                }
+                else
+                {
+                    string temp = generador.newTemporal();
+                    generador.freeTemp(temp);
+                    generador.addExpression(temp, "p", newVar.position.ToString(), "+");
+                    if (this.type.type == Types.BOOLEAN)
+                    {
+                        string tmplabel = generador.newLabel();
+                        generador.addLabel(_value.trueLabel);
+                        generador.addSetStack(temp, "1");
+                        generador.addGoto(tmplabel);
+                        generador.addLabel(_value.falseLabel);
+                        generador.addSetStack(temp, "0");
+                        generador.addLabel(tmplabel);
+                    }
+                    else
+                    {
+                        generador.addSetStack(temp, _value.getValue());
+                    }
+                }
+            }
+        }
+
     }
 }

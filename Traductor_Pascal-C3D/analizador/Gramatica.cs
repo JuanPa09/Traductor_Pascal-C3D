@@ -150,6 +150,8 @@ namespace Traductor_Pascal_C3D.analizador
             NonTerminal Nueva_Asignacion_Constantep = new NonTerminal("Nueva_Asignacion_Constantep");
             NonTerminal Dimensiones = new NonTerminal("Dimensiones");
             NonTerminal Indices_Array = new NonTerminal("Indices_Array");
+            NonTerminal AssignmentId = new NonTerminal("AssignmentId");
+            NonTerminal AccessId = new NonTerminal("AccessId");
             NonTerminal A = new NonTerminal("a");
             NonTerminal B = new NonTerminal("b");
             NonTerminal C = new NonTerminal("c");
@@ -371,7 +373,8 @@ namespace Traductor_Pascal_C3D.analizador
                                         | Identificador + Pt + Identificador + Pt + Identificador + Ds_Pts + Igual + Expresion_Cadena + Pt_Coma
                                         | Identificador + Pt + Identificador + Pt + Identificador + Pt + Identificador + Ds_Pts + Igual + Expresion_Cadena + Pt_Coma
                                         */
-                                        Expresion_Cadena + Ds_Pts + Igual + Expresion_Cadena + Pt_Coma
+                                        //Expresion_Cadena + Ds_Pts + Igual + Expresion_Cadena + Pt_Coma
+                                        AssignmentId + Ds_Pts + Igual + Expresion_Cadena + Pt_Coma
                                         ;
 
             /*Asignacion.ErrorRule
@@ -555,16 +558,26 @@ namespace Traductor_Pascal_C3D.analizador
                                         | Expresion_Numerica + Mod + Expresion_Numerica
                                         | Entero
                                         | Decimal
-                                        | Identificador
+                                        //| Identificador
+                                        | AccessId
                                         | Llamada
                                         | Valor_Arreglo
                                         | True
                                         | False
-                                        | Expresion_Numerica + Pt + Expresion_Numerica
+                                        //| AssignmentId//Expresion_Numerica + Pt + Expresion_Numerica
                                    //    /*Tiene Ambiguedad*/ | Par_Izq + Expresion_Numerica + Par_Der
                                         //| Identificador + Cor_Izq + Indices_Array + Cor_Der
                                         ;
 
+            AssignmentId.Rule
+                                        = AssignmentId + Pt + Identificador
+                                        | Identificador
+                                        ;
+
+            AccessId.Rule
+                                        = AccessId + Pt + Identificador
+                                        | Identificador
+                                        ;
 
             Indices_Array.Rule
                                         = Indices_Array + Coma + Indices_Array

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Traductor_Pascal_C3D.traductor.instruccion.funciones;
+using Traductor_Pascal_C3D.traductor.utils;
 
 namespace Traductor_Pascal_C3D.traductor.tablaSimbolos
 {
@@ -164,6 +165,40 @@ namespace Traductor_Pascal_C3D.traductor.tablaSimbolos
                 actual = actual.anterior;
             }
             return null;
+        }
+
+
+        public bool addStruct(string id, int size,LinkedList<Param> @params)
+        {
+            if (this.structs.ContainsKey(id.ToLower()))
+            {
+                return false;
+            }
+            else
+            {
+                this.structs.Add(id.ToLower(), new SymbolStruct(id.ToLower(), size, @params));
+                return true;
+            }
+        }
+
+        public SymbolStruct getStruct(string id)
+        {
+            Entorno global = getGlobal();
+            if (global.structs.ContainsKey(id.ToLower()))
+            {
+                return global.structs[id];
+            }
+            return null;
+        }
+
+        public Entorno getGlobal()
+        {
+            Entorno actual = this;
+            while (actual.anterior != null)
+            {
+                actual = actual.anterior;
+            }
+            return actual;
         }
 
     }

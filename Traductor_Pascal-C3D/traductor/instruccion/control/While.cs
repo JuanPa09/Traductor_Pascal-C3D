@@ -26,13 +26,15 @@ namespace Traductor_Pascal_C3D.traductor.instruccion.control
             generator.addComment("Inicia While");
             this.condicion.trueLabel = generator.newLabel();
             this.condicion.falseLabel = generator.newLabel();
-            entorno.newContinue(this.condicion.trueLabel);
+            string continueLbl = generator.newLabel();
+            entorno.newContinue(continueLbl);
             entorno.newBreak(this.condicion.falseLabel);
             generator.addLabel(this.condicion.trueLabel);
             foreach(Instruccion instruccion in instrucciones)
             {
                 instruccion.compile(entorno, reporte);
             }
+            generator.addLabel(continueLbl);
             Retorno condition = this.condicion.compile(entorno);
             if (condition.type.type == Types.BOOLEAN)
             {

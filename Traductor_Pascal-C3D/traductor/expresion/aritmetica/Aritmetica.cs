@@ -109,19 +109,44 @@ namespace Traductor_Pascal_C3D.traductor.expresion.aritmetica
                         switch (_right.type.type)
                         {
                             case Types.NUMBER:
-                                generador.addExpression(tempAux, "p", (entorno.size + 1).ToString(), "+");
+                                /*generador.addExpression(tempAux, "p", (entorno.size + 1).ToString(), "+");
                                 generador.addSetStack(tempAux, _left.getValue());
                                 generador.addExpression(tempAux, tempAux, "1", "+");
                                 generador.addSetStack(tempAux, _right.getValue());
                                 generador.addNextEnv(entorno.size);
-                                generador.addCall("native_concat_str_int");
+                                generador.addCall("native_concat_str_num");
                                 generador.addGetStack(temp, "p");
-                                generador.addAntEnv(entorno.size);
+                                generador.addAntEnv(entorno.size);*/
+                                generador.addExpression("T1", _left.getValue());
+                                if (_right.isTemp)
+                                {
+                                    generador.addExpression("T2", _right.getValue());
+                                }
+                                else
+                                {
+                                    generador.addExpression("T2", "h");
+                                    for (int i = 0; i < _right.value.Length; i++)
+                                    {
+                                        generador.addSetHeap("h", ((int)_right.value[i]).ToString());
+                                        generador.nextHeap();
+                                    }
+                                    generador.addSetHeap("h", "-1");
+                                    generador.nextHeap();
+                                }
+                                generador.addCall("native_concat_str_str");
+                                generador.addExpression(temp, "T3");
                                 return new Retorno(temp, true, new utils.Type(Types.STRING,null));
                             /*
                              
                              Falta Double , Boolean y string
                              */
+                            case Types.STRING:
+                                generador.addExpression("T1", _left.getValue());
+                                generador.addExpression("T2", _right.getValue());
+                                generador.addCall("native_concat_str_str");
+                                generador.addExpression(temp, "T3");
+                                return new Retorno(temp, true, new utils.Type(Types.STRING, null));
+
                         }
                     }
                     break;

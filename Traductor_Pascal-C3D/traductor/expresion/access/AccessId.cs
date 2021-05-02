@@ -66,9 +66,9 @@ namespace Traductor_Pascal_C3D.traductor.expresion.access
             else
             {
                 Retorno anterior = this.anterior.compile(entorno);
-                SymbolStruct symStruct = anterior.type._struct;
+                SymbolStruct symStruct = entorno.getStruct(anterior.type.typeId);
                 if (anterior.type.type != Types.STRUCT || symStruct == null)
-                    throw new ErroPascal(this.line, this.column, "Acceso no calido para el tipo " + anterior.type.type, "Semántico");
+                    throw new ErroPascal(this.line, this.column, "Acceso no valido para el tipo " + anterior.type.type, "Semántico");
                 object[] attribute = symStruct.getAttribute(this.id);
                 if (attribute[1] == null)
                     throw new ErroPascal(this.line, this.column, "El struct " + symStruct.identifier + " no tiene el atributo " + id, "Semántico");
@@ -79,7 +79,7 @@ namespace Traductor_Pascal_C3D.traductor.expresion.access
 
                 generador.addExpression(tempAux, anterior.getValue(), attribute[0].ToString(), "+");
                 generador.addGetHeap(temp, tempAux);
-                return new Retorno(temp, true, ((Param)attribute[0]).type);
+                return new Retorno(temp, true, ((Param)attribute[1]).type);
 
 
             }

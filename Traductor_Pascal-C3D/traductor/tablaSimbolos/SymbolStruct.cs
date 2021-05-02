@@ -9,7 +9,7 @@ namespace Traductor_Pascal_C3D.traductor.tablaSimbolos
     {
         public string identifier;
         int size;
-        LinkedList<Param> attributes;
+        public LinkedList<Param> attributes;
 
         public SymbolStruct(string identifier, int size, LinkedList<Param> attributes)
         {
@@ -21,8 +21,8 @@ namespace Traductor_Pascal_C3D.traductor.tablaSimbolos
         public object[] getAttribute(string id)
         {
             /*
-             @index pos1
-             @value pos2
+             @index pos0
+             @value pos1
              */
             int i = 0;
             Dictionary<int, Param> dic = new Dictionary<int, Param>();

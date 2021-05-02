@@ -8,13 +8,15 @@ namespace Traductor_Pascal_C3D.traductor.utils
     {
         public string id;
         public utils.Type type;
-        public bool isRef;
+        public bool isRef; //Es valor por referencia
+        public string idRef; //Id referenciado
 
-        public Param(string id, utils.Type type, bool isRef = false)
+        public Param(string id, utils.Type type, bool isRef = false,string idRef = null)
         {
             this.id = id.ToLower();
             this.type = type;
             this.isRef = isRef;
+            this.idRef = idRef;
         }
 
         public string getUnicType()

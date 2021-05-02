@@ -6,6 +6,11 @@ using Traductor_Pascal_C3D.traductor.reportes;
 using Traductor_Pascal_C3D.traductor.tablaSimbolos;
 using Traductor_Pascal_C3D.traductor.utils;
 using Traductor_Pascal_C3D.traductor.generador;
+using Traductor_Pascal_C3D.traductor.variables;
+using Traductor_Pascal_C3D.traductor.expresion.assignment ;
+using Traductor_Pascal_C3D.traductor.expresion.literal;
+
+using System.Linq;
 
 namespace Traductor_Pascal_C3D.traductor.expresion.assignment
 {
@@ -14,6 +19,7 @@ namespace Traductor_Pascal_C3D.traductor.expresion.assignment
         private string id;
         private Expresion anterior = null;
         private LinkedList<Expresion> @params;
+        
 
         public AssignmentFunc(string id, Expresion anterior, LinkedList<Expresion> @params, int line, int column):base(line,column)
         {
@@ -54,10 +60,42 @@ namespace Traductor_Pascal_C3D.traductor.expresion.assignment
                 }
                 generador.addNextEnv(entorno.size);
                 generador.addCall(symFunc.uniqueId);
+                int i = 0;
+                string refVal = generador.newTemporal(); generador.freeTemp(refVal);
+                string refPos = generador.newTemporal();
+                generador.addComment("Pasando variables por referencia");
+                Dictionary<string, string> refValues = new Dictionary<string, string>();
+                foreach(Param _param in symFunc._params)
+                {
+                    if (_param.isRef)
+                    {
+                        refPos = (entorno.size + i + 1).ToString();
+                        generador.addGetStack(refVal,refPos);
+                        int posTarget = paramsValues.ElementAt(i).simbolo.position;
+                        refValues.Add(posTarget.ToString(), refVal);
+                    }
+                    i += 0;
+                }
+                generador.addComment("Terminan variables por referencia");
                 generador.addGetStack(temp, "p");
                 generador.addAntEnv(entorno.size);
                 generador.recoverTemps(entorno, size);
+                generador.addComment("Asignando Variables Por Referencia");
+                foreach(KeyValuePair<string,string> refValue in refValues)
+                {
+                    string posTemp = refValue.Key;
+                    string valueTemp = refValue.Value;
+                    generador.addSetStack(posTemp,valueTemp);
+                }
+                generador.addComment("Terminan Variables Por Referencia");
+                generador.addComment("Este es el temp");
                 generador.addTemp(temp);
+
+                
+                
+                
+                
+
 
                 if (symFunc.type.type != Types.BOOLEAN)
                     return new Retorno(temp, true, symFunc.type);

@@ -126,6 +126,7 @@ namespace Traductor_Pascal_C3D.analizador
                     evaluarVarConst(actual.ChildNodes[0],ref listaDeclaraciones);
                     return new DeclararVariables(listaDeclaraciones,0,0);
                 case "Types":
+                    return evaluarType(actual.ChildNodes[0]);
                 case "Asignacion":
                     return nuevaAsignacion(actual.ChildNodes[0],0,0);
                 case "If_Statement":
@@ -369,7 +370,7 @@ namespace Traductor_Pascal_C3D.analizador
 
         public Instruccion nuevaAsignacion(ParseTreeNode actual,int line, int column)
         {
-            return new Asignacion(expresionCadena(actual.ChildNodes[0]), expresionCadena(actual.ChildNodes[3]),line,column);
+            return new Asignacion(evaluarAssignmentId(actual.ChildNodes[0]), expresionCadena(actual.ChildNodes[3]),line,column);
             /*switch (actual.ChildNodes.Count)
             {
                 case 7:
@@ -427,6 +428,90 @@ namespace Traductor_Pascal_C3D.analizador
             }
         }
 
+        public Instruccion evaluarType(ParseTreeNode actual)
+        {
+            switch (actual.ChildNodes[0].Term.ToString())
+            {
+                case "Objeto":
+                    return nuevoObjeto(actual.ChildNodes[0]);
+                case "Tipo_Array":
+                    return null;//nuevoTypeArray(actual.ChildNodes[0]);
+            }
+            return null;
+        }
+
+        public Instruccion nuevoObjeto(ParseTreeNode actual)
+        {
+            LinkedList<Param> variables = new LinkedList<Param>();
+            nuevoevaluarVarConst(actual.ChildNodes[4], ref variables);
+            return new StructSt(actual.ChildNodes[1].Token.Text, variables, actual.ChildNodes[1].Token.Location.Line, actual.ChildNodes[1].Token.Location.Column);
+        }
+
+        public void nuevoevaluarVarConst(ParseTreeNode actual, ref LinkedList<Param> listaDeclaraciones)
+        {
+            if (actual.ChildNodes[0].Term.ToString() == "var")
+            {
+                nuevoevaluarVariable(actual.ChildNodes[1], ref listaDeclaraciones, true); //Es variable
+            }
+            else
+            {
+                nuevoevaluarVariable(actual.ChildNodes[1], ref listaDeclaraciones, false); //Es constante
+            }
+
+        }
+
+        public LinkedList<Instruccion> nuevoevaluarVariable(ParseTreeNode actual, ref LinkedList<Param> listaDeclaraciones, bool isVariable)
+        {
+            Debug.WriteLine("nodo -> " + actual.Term.ToString());
+            //Estoy en var Nueva_Asignacion_variable
+            if (actual.ChildNodes.Count == 0)
+                return null;
+
+
+            //Ir a Asignacion Variable
+            listaDeclaraciones.AddLast(nuevodeclaracionVariable(actual.ChildNodes[0], ref listaDeclaraciones, isVariable));
+
+            if (actual.ChildNodes[1].ChildNodes.Count != 0)
+                nuevoevaluarVariable(actual.ChildNodes[1].ChildNodes[0], ref listaDeclaraciones, isVariable);
+            return null;
+        }
+
+        public Param nuevodeclaracionVariable(ParseTreeNode actual, ref LinkedList<Param> listaDeclaraciones, bool isVariable)
+        {
+            // Estoy en ID : Tipo ......
+            int cantidad = actual.ChildNodes.Count;
+            int linea = actual.ChildNodes[0].Token.Location.Line;
+            int columna = actual.ChildNodes[0].Token.Location.Column;
+            LinkedList<string> ids = new LinkedList<string>();
+
+            switch (cantidad)
+            {
+                case 4:
+                    ids.AddLast(actual.ChildNodes[0].Token.Text);
+                    //listaDeclaraciones.AddLast(new Declaracion(getTipo(actual.ChildNodes[2]), ids, null, linea, columna));
+                    return new Param(actual.ChildNodes[0].Token.Text, getTipo(actual.ChildNodes[2]));
+                case 6:
+                    if (actual.ChildNodes[1].Token.Text != ",")
+                    {
+                        //ids.AddLast(actual.ChildNodes[0].Token.Text);
+                        //listaDeclaraciones.AddLast(new Declaracion(getTipo(actual.ChildNodes[2]), ids, expresionCadena(actual.ChildNodes[4]), linea, columna));
+                    }
+                    else
+                    {
+                        //Tiene ,
+                        //listaDeclaraciones = variosIds(actual.ChildNodes[2], actual.ChildNodes[0].Token.Text, getTipo(actual.ChildNodes[4]), ref listaDeclaraciones, isVariable, actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
+                    }
+                    break;
+                case 9:
+                    /*LinkedList<Dictionary<string, int>> diccionarios = new LinkedList<Dictionary<string, int>>();
+                    getDimensiones(actual.ChildNodes[4], ref diccionarios);
+                    listaDeclaraciones.AddLast(new NuevoArreglo(actual.ChildNodes[0].Token.Text, diccionarios, getTipo(actual.ChildNodes[7]), actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column));
+                    */
+                    break;
+            }
+            return null;
+
+        }
 
         /***************************     Estructuras de control   ********************/
 
@@ -552,7 +637,7 @@ namespace Traductor_Pascal_C3D.analizador
 
             if (MasTexto != null)
             {
-                return new Aritmetica(ExpresionCadena,MasTexto,'+',expresionCadena.Token.Location.Line,expresionCadena.Token.Location.Column); //retornar algo
+                return new Aritmetica(ExpresionCadena,MasTexto,'+',0,0); //retornar algo
             }
             else
             {
@@ -581,9 +666,7 @@ namespace Traductor_Pascal_C3D.analizador
                         return new Aritmetica(evaluarExpresionNumerica(actual.ChildNodes[0]), evaluarExpresionNumerica(actual.ChildNodes[2]), '/',line,column);
                     case "div":
                         return new Aritmetica(evaluarExpresionNumerica(actual.ChildNodes[0]), evaluarExpresionNumerica(actual.ChildNodes[2]), 'd',line,column);
-                    case ".":
-                        /*Falta Codigo*/
-                        return null;
+                    
                     default:
                         return new Aritmetica(evaluarExpresionNumerica(actual.ChildNodes[0]), evaluarExpresionNumerica(actual.ChildNodes[2]), '%', line,column);
                 }
@@ -613,6 +696,8 @@ namespace Traductor_Pascal_C3D.analizador
                         //actual = actual.ChildNodes[0];
                         //return new ObtenerArreglo(actual.ChildNodes[0].Token.Text, getIndicesArray(actual.ChildNodes[2], new LinkedList<Expresion>())); ;
                         return null;
+                    case "AccessId":
+                        return evaluarAccessId(actual.ChildNodes[0]);
                     case "true":
                         line = actual.ChildNodes[0].Token.Location.Line;
                         column = actual.ChildNodes[0].Token.Location.Column;
@@ -653,7 +738,7 @@ namespace Traductor_Pascal_C3D.analizador
 
                 if (ExpresionCadena1 != null && ExpresionCadena2 != null)
                 {
-                    return new Aritmetica(ExpresionCadena1, ExpresionCadena2, getSignoAritmetica(expresionCadena.ChildNodes[1]), expresionCadena.Token.Location.Line, expresionCadena.Token.Location.Column);
+                    return new Aritmetica(ExpresionCadena1, ExpresionCadena2, getSignoAritmetica(expresionCadena.ChildNodes[1]), 0, 0);
                 }
                 else
                 {
@@ -763,23 +848,28 @@ namespace Traductor_Pascal_C3D.analizador
                     if (actual.ChildNodes[0].Token != null)
                     {
                         //return new Relacional(new ObtenerVariable(actual.ChildNodes[0].Token.Text), null, "unica");
-                        return null;
+                        return new AccessId(actual.ChildNodes[0].Token.Text, null, actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
+                        //return null;
                     }
                     else
                     {
                         //Es una llamada
                         //return new Relacional(evaluarNuevaLlamada(actual.ChildNodes[0]), null, "unica");
-                        return null;
+                        actual = actual.ChildNodes[0];
+                        LinkedList<Expresion> @params = new LinkedList<Expresion>();
+                        entradaFuncion(actual.ChildNodes[2], ref @params);
+                        return new AssignmentFunc(actual.ChildNodes[0].Token.Text, null, @params, actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
+                        //return null;
                     }
                 if (actual.Token.Text.ToLower() == "true")
                 {
                     //return new Relacional(new Literal('T', true), null, "unica");
-                    return null;
+                    return new Primitivo(Types.BOOLEAN,true,actual.Token.Location.Line,actual.Token.Location.Column);
                 }
                 else
                 {
                     //return new Relacional(new Literal('F', false), null, "unica");
-                    return null;
+                    return new Primitivo(Types.BOOLEAN, false, actual.Token.Location.Line, actual.Token.Location.Column);
                 }
             }
         }
@@ -800,6 +890,29 @@ namespace Traductor_Pascal_C3D.analizador
                     return '%';
             }
         }
+
+        public Expresion evaluarAssignmentId(ParseTreeNode actual)
+        {
+            switch (actual.ChildNodes.Count)
+            {
+                case 3:
+                    return new AssignmentId(actual.ChildNodes[2].Token.Text, evaluarAssignmentId(actual.ChildNodes[0]), actual.ChildNodes[2].Token.Location.Line, actual.ChildNodes[2].Token.Location.Column);
+                default:
+                    return new AssignmentId(actual.ChildNodes[0].Token.Text,null, actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
+
+            }
+        }
+
+        public Expresion evaluarAccessId(ParseTreeNode actual)
+        {
+            switch (actual.ChildNodes.Count)
+            {
+                case 3:
+                    return new AccessId(actual.ChildNodes[2].Token.Text,evaluarAccessId(actual.ChildNodes[0]), actual.ChildNodes[2].Token.Location.Line, actual.ChildNodes[2].Token.Location.Column);
+                default:
+                    return new AccessId(actual.ChildNodes[0].Token.Text,null,actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
+            }
+        }
         
         public Type getTipo(ParseTreeNode actual)
         {
@@ -817,7 +930,7 @@ namespace Traductor_Pascal_C3D.analizador
                 case "array":
                     return new Type(Types.ARRAY, null);
                 case "ID":
-                    return new Type(Types.TYPE, actual.ChildNodes[0].Token.Text);
+                    return new Type(Types.STRUCT, actual.ChildNodes[0].Token.Text);
                 default:
                     return new Type(Types.NULLL, null);
             }

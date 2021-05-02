@@ -18,7 +18,7 @@ namespace Traductor_Pascal_C3D.traductor.generador
 
         private Generador()
         {
-            this.temporal = 4;
+            this.temporal = 5;
             this.label = 3;
             this.code = new LinkedList<string>();
             this.tempStorage = new LinkedList<string>();
@@ -51,7 +51,7 @@ namespace Traductor_Pascal_C3D.traductor.generador
 
         public void clearCode()
         {
-            this.temporal = 4;
+            this.temporal = 5;
             this.label = 3;
             this.code = new LinkedList<string>();
             this.tempStorage = new LinkedList<string>();
@@ -60,7 +60,7 @@ namespace Traductor_Pascal_C3D.traductor.generador
 
         public void addCode(string code)
         {
-            this.code.AddLast(code);
+            this.code.AddLast(this.isFunc + code);
         }
         
         public string getCode()
@@ -108,7 +108,7 @@ namespace Traductor_Pascal_C3D.traductor.generador
 
         public void addGetHeap(string target, string index)
         {
-            this.code.AddLast(this.isFunc + target + " = Heap[" + index + "]");
+            this.code.AddLast(this.isFunc + target + " = Heap[(int)" + index + "];");
         }
 
         public void addSetHeap(string index, string value)
@@ -216,7 +216,7 @@ namespace Traductor_Pascal_C3D.traductor.generador
         {
             string temps = "";
             /************* Temporales Por Defecto *************/
-            temps += "T0,T1,T2,T3";
+            temps += "T0,T1,T2,T3,T4";
             /**************************************************/
             int index = 1;
             foreach(string temp in tempStorage1)
@@ -311,6 +311,18 @@ namespace Traductor_Pascal_C3D.traductor.generador
             }
         }
 
+        public string removeLast()
+        {
+            string retorno  = this.code.Last.Value;
+            this.code.RemoveLast();
+            return retorno;
+        }
+
+        /*public void addCode(string code)
+        {
+            this.code.AddLast(code);
+        }*/
+
         /*-----Funciones Nativas-----*/
 
         public void addNativaPrint()
@@ -327,7 +339,7 @@ namespace Traductor_Pascal_C3D.traductor.generador
              */
             this.code.AddLast(this.isFunc + "L0:");
             this.code.AddLast(this.isFunc + "if ((int)Heap[(int)T0] == -1) goto L1;");
-            this.addPrint('c', "(int)Heap[(int)T0]");
+            this.addPrint('c', "Heap[(int)T0]");
             this.code.AddLast(this.isFunc + "T0 = T0 + 1;");
             this.code.AddLast(this.isFunc + "goto L0;");
             this.code.AddLast(this.isFunc + "L1:");
@@ -372,6 +384,131 @@ namespace Traductor_Pascal_C3D.traductor.generador
 
         }
 
+        public void addNativa_Concat_Str_Str()
+        {
+            /*void native_concat_str_str()
+            {
+                //T1, T2, T3
+                //T4
+
+                /*T3 = h; //valor de retorno
+
+            L0:
+                T4 = Heap[(int)T1];
+                if (T4 == -1) goto L1;
+                Heap[(int)h] = T4;
+                T1 = T1 + 1;
+                h = h + 1;
+                goto L0;
+
+            L1:
+                T4 = Heap[(int)T2];
+                if (T4 == -1) goto L2;
+                Heap[(int)h] = T4;
+                T2 = T2 + 1;
+                h = h + 1;
+                goto L1;
+
+            L2:
+                Heap[(int)h] = -1; //Fin de cadena
+                h = h + 1;
+            }*/
+            addStartFunc("native_concat_str_str", "void");
+            addExpression("T3", "h");
+            addLabel("L0");
+            addGetHeap("T4","T1");
+            addIf("T4", "-1", "==","L1");
+            addSetHeap("h", "T4");
+            addExpression("T1", "T1", "1", "+");
+            nextHeap();
+            addGoto("L0");
+            addLabel("L1");
+            addGetHeap("T4","T2");
+            addIf("T4", "-1", "==", "L2");
+            addSetHeap("h", "T4");
+            addExpression("T2", "T2", "1", "+");
+            nextHeap();
+            addGoto("L1");
+            addLabel("L2");
+            addSetHeap("h", "-1");
+            nextHeap();
+            addReturn("");
+            addEndFunc();
+        }
+
+        public void addNativa_Concat_Str_Num()
+        {
+            /*void native_concat_str_num()
+            {
+                //T1, T2, T3
+                //T4
+
+                /*T3 = h; //valor de retorno
+
+            L0:
+                T4 = Heap[(int)T1];
+                if (T4 == -1) goto L1;
+                Heap[(int)h] = T4;
+                T1 = T1 + 1;
+                h = h + 1;
+                goto L0;
+
+            L1:
+                T4 = Heap[(int)T2]
+                Heap[(int)h] = T4;
+                h = h + 1;
+
+            L2:
+                Heap[(int)h] = -1; //Fin de cadena
+                h = h + 1;
+            }*/
+            addStartFunc("native_concat_str_num", "void");
+            addExpression("T3", "h");
+            addLabel("L0");
+            addGetHeap("T4", "T1");
+            addIf("T4", "-1", "==", "L1");
+            addSetHeap("h", "T4");
+            addExpression("T1", "T1", "1", "+");
+            nextHeap();
+            addGoto("L0");
+            addLabel("L1");
+            addGetHeap("T4", "T2");
+            addSetHeap("h", "T4");
+            nextHeap();
+            addLabel("L2");
+            addSetHeap("h", "-1");
+            nextHeap();
+            addReturn("");
+            addEndFunc();
+        }
+
+
+        string getNumCode(string num)
+        {
+            switch (num)
+            {
+                case "1":
+                    return "49";
+                case "2":
+                    return "50";
+                case "3":
+                    return "51";
+                case "4":
+                    return "52";
+                case "5":
+                    return null;
+                case "6":
+                    return null;
+                case "7":
+                    return null;
+                case "8":
+                    return null;
+                case "9":
+                    return null;
+                default:
+                    return "48";
+            }
+        }
 
     }
 }

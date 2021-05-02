@@ -12,7 +12,7 @@ namespace Traductor_Pascal_C3D.traductor.tablaSimbolos
         string id;
         public string uniqueId;
         int size;
-        LinkedList<Param> _params;
+        public LinkedList<Param> _params;
 
         public SymbolFunction(FunctionSt func, string uniqueId)
         {
