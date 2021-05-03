@@ -10,6 +10,7 @@ namespace Traductor_Pascal_C3D.traductor.tablaSimbolos
     {
         public Dictionary<string, SymbolFunction> functions;
         public Dictionary<string, SymbolStruct> structs;
+        public Dictionary<string, SymbolArray> arrays;
         public Dictionary<string, Simbolo> vars;
         public Entorno anterior = null;
         public int size;
@@ -29,6 +30,7 @@ namespace Traductor_Pascal_C3D.traductor.tablaSimbolos
             this.functions = new Dictionary<string, SymbolFunction>();
             this.structs = new Dictionary<string, SymbolStruct>();
             this.vars = new Dictionary<string, Simbolo>();
+            this.arrays = new Dictionary<string, SymbolArray>();
             this.size = (anterior != null?anterior.size:0);
             this._break = (anterior != null ? anterior._break : new LinkedList<string>());
             this._return = (anterior != null ? anterior._return : null);
@@ -189,6 +191,27 @@ namespace Traductor_Pascal_C3D.traductor.tablaSimbolos
                 return global.structs[id];
             }
             return null;
+        }
+
+        public bool addArray(string id, utils.Type type, LinkedList<Dictionary<int, int>> dimensiones)
+        {
+            if (arrays.ContainsKey(id))
+                return false;
+            arrays.Add(id, new SymbolArray(type, id, dimensiones));
+            return true;
+        }
+
+        public SymbolArray getArray(string id)
+        {
+            Entorno actual = this;
+            while (actual != null)
+            {
+                if (actual.arrays.ContainsKey(id))
+                    return actual.arrays[id];
+                actual = actual.anterior;
+            }
+
+            return null ;
         }
 
         public Entorno getGlobal()

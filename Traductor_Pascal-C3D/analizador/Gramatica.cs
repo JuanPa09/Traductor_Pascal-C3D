@@ -561,7 +561,7 @@ namespace Traductor_Pascal_C3D.analizador
                                         //| Identificador
                                         | AccessId
                                         | Llamada
-                                        | Valor_Arreglo
+                                        //| Valor_Arreglo
                                         | True
                                         | False
                                         //| AssignmentId//Expresion_Numerica + Pt + Expresion_Numerica
@@ -571,11 +571,13 @@ namespace Traductor_Pascal_C3D.analizador
 
             AssignmentId.Rule
                                         = AssignmentId + Pt + Identificador
+                                        | AssignmentId + Cor_Izq + Indices_Array + Cor_Der
                                         | Identificador
                                         ;
 
             AccessId.Rule
                                         = AccessId + Pt + Identificador
+                                        | AccessId + Cor_Izq + Indices_Array + Cor_Der
                                         | Identificador
                                         ;
 

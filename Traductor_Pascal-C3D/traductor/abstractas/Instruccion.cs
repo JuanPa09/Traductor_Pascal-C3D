@@ -30,9 +30,17 @@ namespace Traductor_Pascal_C3D.traductor.abstractas
             }
             else if(type1.type == utils.Types.STRUCT || type2.type == utils.Types.STRUCT)
             {
-                if(type1.type == utils.Types.NULLL || type2.type == utils.Types.NULLL)
+                if (type1.type == utils.Types.NULLL || type2.type == utils.Types.NULLL)
                 {
                     return true;
+                }
+                else if (type1.type == utils.Types.ARRAY)
+                {
+                    return type1.dimension > 0;
+                }
+                else if (type2.type == utils.Types.ARRAY)
+                {
+                    return type2.dimension > 0;
                 }
             }
             return false;

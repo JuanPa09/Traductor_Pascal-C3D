@@ -24,11 +24,14 @@ namespace Traductor_Pascal_C3D.traductor.variables
         LinkedList<Simbolo> _newVar;
         Retorno _value;
 
+        Types typeAuxiliar;
+
         public Declaracion(utils.Type type, LinkedList<string> idList, Expresion value, int line, int column):base(line,column)
         {
             this.type = type;
             this.idList = idList;
-            this.value = value == null && type.type == Types.STRUCT ? new NewStruct(type.typeId, this.line, this.column) : value;
+            //this.value = value == null && type.type == Types.STRUCT ? new NewStruct(type.typeId, this.line, this.column) : value;
+            this.value = value;
             this.line = line;
 
             _newVar = new LinkedList<Simbolo>();
@@ -37,7 +40,20 @@ namespace Traductor_Pascal_C3D.traductor.variables
         public override object compile(Entorno entorno, Reporte reporte)
         {
             Generador generador = Generador.getInstance();
-
+            if(this.value==null && type.type == Types.STRUCT)
+            {
+                if(entorno.getArray(type.typeId) != null)
+                {
+                    
+                    this.value = new DeclaracionArray( entorno.getArray(type.typeId),this.line,this.column);
+                    
+                    
+                }
+                else
+                {
+                    this.value = new NewStruct(type.typeId, this.line, this.column);
+                }
+            }
             if (!procesada)
             {
                 this.procesada = true;
@@ -74,6 +90,11 @@ namespace Traductor_Pascal_C3D.traductor.variables
                 this.validateType(entorno);
                 foreach (string id in idList)
                 {
+                    if(value.type.type == Types.ARRAY)//
+                    {
+                        SymbolArray symbolArray = entorno.getArray(this.type.typeId);//
+                        value.type = symbolArray.type;//
+                    }//
                     Simbolo newVar = entorno.addVar(id, value.type.type == Types.NULLL ? this.type : value.type, false, false);
                     if (newVar == null)
                     {
@@ -140,9 +161,15 @@ namespace Traductor_Pascal_C3D.traductor.variables
                 SymbolStruct _struct = entorno.searchStruct(this.type.typeId);
                 if(_struct == null)
                 {
-                    throw new ErroPascal(this.line, this.column, "No existe el struct " + this.type.typeId, "Semántico");
+                    SymbolArray _array = entorno.getArray(this.type.typeId);
+                    if(_array == null)
+                        throw new ErroPascal(this.line, this.column, "No existe el struct " + this.type.typeId, "Semántico");
                 }
-                this.type._struct = _struct;
+                else
+                {
+                    this.type._struct = _struct;
+                }
+                
             }
         }
 

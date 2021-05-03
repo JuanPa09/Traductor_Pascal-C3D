@@ -5,6 +5,7 @@ using Traductor_Pascal_C3D.traductor.abstractas;
 using Traductor_Pascal_C3D.traductor.utils;
 using Traductor_Pascal_C3D.traductor.tablaSimbolos;
 using Traductor_Pascal_C3D.traductor.reportes;
+using Traductor_Pascal_C3D.traductor.variables;
 
 namespace Traductor_Pascal_C3D.traductor.instruccion.funciones
 {
@@ -36,9 +37,20 @@ namespace Traductor_Pascal_C3D.traductor.instruccion.funciones
                     throw new ErroPascal(this.line, this.column, "Ya existe un parametro con el id " + _param.id,"Semantico");
                 if(_param.type.type == Types.STRUCT)
                 {
+
                     SymbolStruct _struct = entorno.getStruct(_param.type.typeId);
                     if (_struct == null)
-                        throw new ErroPascal(this.line, this.column, "No existe el type " + _param.type.typeId,"Semantico");
+                    {
+                        SymbolArray symbolArray = entorno.getArray(_param.type.typeId);
+                        if(symbolArray == null)
+                            throw new ErroPascal(this.line, this.column, "No existe el type " + _param.type.typeId, "Semantico");
+                        DeclaracionArray declararArray = new DeclaracionArray(symbolArray, this.line, this.column);
+                        declararArray.compile(entorno);
+                    }
+                        
+
+
+
                 }
                 set.AddLast(_param.id.ToLower());
             }

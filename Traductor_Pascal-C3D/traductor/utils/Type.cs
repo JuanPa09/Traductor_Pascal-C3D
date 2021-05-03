@@ -17,19 +17,22 @@ namespace Traductor_Pascal_C3D.traductor.utils
         DOUBLE = 6,
         TYPE = 7,
         STRUCT = 8
-
+        
     }
 
     class Type
     {
         public Types type;
         public string typeId;
+        public int dimension;
         public SymbolStruct _struct = null;
 
-        public Type(Types type, string typeId,SymbolStruct _struct = null)
+
+        public Type(Types type, string typeId,SymbolStruct _struct = null,int dimension = 0)
         {
             this.type = type;
             this.typeId = typeId;
+            this.dimension = dimension;
             this._struct = _struct;
         }
     }

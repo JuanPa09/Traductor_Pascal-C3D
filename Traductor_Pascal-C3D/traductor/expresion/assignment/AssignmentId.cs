@@ -31,6 +31,11 @@ namespace Traductor_Pascal_C3D.traductor.expresion.assignment
                     throw new ErroPascal(this.line, this.column, "La variable " + this.id + " no existe","Semantico");
                 if (symbol.isGlobal)
                 {
+                    /*if(symbol.type.type == Types.ARRAY)
+                    {
+                        SymbolArray symbolArray = entorno.getArray(symbol.type.typeId);
+                        return new Retorno(symbol.position.ToString(),false,new utils.Type(symbolArray.type.type,symbolArray.type.typeId),symbol);
+                    }*/
                     return new Retorno(symbol.position.ToString(), false, symbol.type, symbol);
                 }
                 else
@@ -62,6 +67,12 @@ namespace Traductor_Pascal_C3D.traductor.expresion.assignment
                     generador.addGetHeap(tempAux, anterior.getValue());
                 }
                 generador.addExpression(temp, tempAux, attribute[0].ToString(), "+");
+                if (((Param)attribute[1]).type.type == Types.STRUCT)
+                {
+                    SymbolArray symbolArray = entorno.getArray(((Param)attribute[1]).type.typeId);
+                    if (symbolArray != null)
+                        return new Retorno(temp, true, symbolArray.type);
+                }
                 return new Retorno(temp, true, ((Param)attribute[1]).type, new Simbolo(((Param)attribute[1]).type, this.id, (int)attribute[0], false, false, true));
             }
         }

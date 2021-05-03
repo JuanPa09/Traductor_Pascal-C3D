@@ -79,6 +79,12 @@ namespace Traductor_Pascal_C3D.traductor.expresion.access
 
                 generador.addExpression(tempAux, anterior.getValue(), attribute[0].ToString(), "+");
                 generador.addGetHeap(temp, tempAux);
+                if(((Param)attribute[1]).type.type == Types.STRUCT)
+                {
+                    SymbolArray symbolArray = entorno.getArray(((Param)attribute[1]).type.typeId);
+                    if (symbolArray != null)
+                        return new Retorno(temp, true, symbolArray.type);
+                }
                 return new Retorno(temp, true, ((Param)attribute[1]).type);
 
 

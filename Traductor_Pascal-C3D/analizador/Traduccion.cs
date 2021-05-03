@@ -435,7 +435,7 @@ namespace Traductor_Pascal_C3D.analizador
                 case "Objeto":
                     return nuevoObjeto(actual.ChildNodes[0]);
                 case "Tipo_Array":
-                    return null;//nuevoTypeArray(actual.ChildNodes[0]);
+                    return nuevoTypeArray(actual.ChildNodes[0]);
             }
             return null;
         }
@@ -445,6 +445,33 @@ namespace Traductor_Pascal_C3D.analizador
             LinkedList<Param> variables = new LinkedList<Param>();
             nuevoevaluarVarConst(actual.ChildNodes[4], ref variables);
             return new StructSt(actual.ChildNodes[1].Token.Text, variables, actual.ChildNodes[1].Token.Location.Line, actual.ChildNodes[1].Token.Location.Column);
+        }
+
+        public Instruccion nuevoTypeArray(ParseTreeNode actual)
+        {
+            LinkedList<Dictionary<int, int>> diccionarios = new LinkedList<Dictionary<int, int>>();
+            getDimensiones(actual.ChildNodes[5], ref diccionarios);
+            return new NuevoArray(getTipo(actual.ChildNodes[8]), actual.ChildNodes[1].Token.Text, diccionarios, actual.ChildNodes[1].Token.Location.Line, actual.ChildNodes[1].Token.Location.Column);
+            ///return new TypeArreglo(actual.ChildNodes[1].Token.Text, diccionarios, getTipo(actual.ChildNodes[8]), actual.ChildNodes[1].Token.Location.Line, actual.ChildNodes[1].Token.Location.Column);
+        }
+
+        public void getDimensiones(ParseTreeNode actual, ref LinkedList<Dictionary<int, int>> diccionarios)
+        {
+            if (actual.ChildNodes.Count == 4)
+            {
+                Dictionary<int, int> valores = new Dictionary<int, int>();
+                /*valores.Add("min", int.Parse(actual.ChildNodes[0].Token.Text));
+                valores.Add("max", int.Parse(actual.ChildNodes[3].Token.Text));
+                diccionarios.AddFirst(valores);*/
+                valores.Add(int.Parse(actual.ChildNodes[0].Token.Text), int.Parse(actual.ChildNodes[3].Token.Text));
+                diccionarios.AddLast(valores);
+            }
+            else
+            {
+                getDimensiones(actual.ChildNodes[0], ref diccionarios);
+                getDimensiones(actual.ChildNodes[2], ref diccionarios);
+
+            }
         }
 
         public void nuevoevaluarVarConst(ParseTreeNode actual, ref LinkedList<Param> listaDeclaraciones)
@@ -897,6 +924,9 @@ namespace Traductor_Pascal_C3D.analizador
             {
                 case 3:
                     return new AssignmentId(actual.ChildNodes[2].Token.Text, evaluarAssignmentId(actual.ChildNodes[0]), actual.ChildNodes[2].Token.Location.Line, actual.ChildNodes[2].Token.Location.Column);
+                case 4:
+                    LinkedList<Expresion> indices = new LinkedList<Expresion>();
+                    return new AssignmentArray(getIndicesArray(actual.ChildNodes[2],indices),evaluarAssignmentId(actual.ChildNodes[0]),0,0);
                 default:
                     return new AssignmentId(actual.ChildNodes[0].Token.Text,null, actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
 
@@ -909,11 +939,33 @@ namespace Traductor_Pascal_C3D.analizador
             {
                 case 3:
                     return new AccessId(actual.ChildNodes[2].Token.Text,evaluarAccessId(actual.ChildNodes[0]), actual.ChildNodes[2].Token.Location.Line, actual.ChildNodes[2].Token.Location.Column);
+                case 4:
+                    LinkedList<Expresion> indices = new LinkedList<Expresion>();
+                    return new AccessArray(getIndicesArray(actual.ChildNodes[2],indices), evaluarAccessId(actual.ChildNodes[0]), 0, 0);
                 default:
                     return new AccessId(actual.ChildNodes[0].Token.Text,null,actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column);
             }
         }
-        
+
+        public LinkedList<Expresion> getIndicesArray(ParseTreeNode actual, LinkedList<Expresion> indices)
+        {
+
+            switch (actual.ChildNodes.Count)
+            {
+                case 3:
+                    //indices =  getIndicesArray(actual.ChildNodes[0],indices);
+                    //indices =  getIndicesArray(actual.ChildNodes[2], indices);
+                    indices = getIndicesArray(actual.ChildNodes[0], indices);
+                    indices = getIndicesArray(actual.ChildNodes[2], indices);
+                    break;
+                default:
+                    indices.AddLast(expresionCadena(actual.ChildNodes[0]));
+                    break;
+            }
+
+            return indices;
+        }
+
         public Type getTipo(ParseTreeNode actual)
         {
             Debug.WriteLine(actual.ChildNodes[0].Term.ToString());
