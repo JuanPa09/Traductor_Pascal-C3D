@@ -122,7 +122,14 @@ namespace Traductor_Pascal_C3D.traductor.instruccion.funciones
                     //SymbolStruct struct = entorno
                     SymbolStruct _struct = entorno.searchStruct(param.type.typeId);
                     if (_struct == null)
-                        throw new ErroPascal(this.line, this.column, "No existe el type " + param.type.typeId, "Semantico");
+                    {
+                        SymbolArray symbolArray = entorno.getArray(param.type.typeId);
+                        if (symbolArray == null)
+                        {
+                            throw new ErroPascal(this.line, this.column, "No existe el type " + param.type.typeId, "Semantico");
+                        }   
+                    }
+                        
                     param.type._struct = _struct;
                 }
                 set.AddLast(param.id.ToLower());

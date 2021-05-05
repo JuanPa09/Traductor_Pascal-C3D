@@ -338,8 +338,9 @@ namespace Traductor_Pascal_C3D.traductor.generador
             L1:
              */
             this.code.AddLast(this.isFunc + "L0:");
-            this.code.AddLast(this.isFunc + "if ((int)Heap[(int)T0] == -1) goto L1;");
-            this.addPrint('c', "Heap[(int)T0]");
+            addExpression("T1", "Heap[(int)T0]");
+            this.code.AddLast(this.isFunc + "if (T1 == -1) goto L1;");
+            this.addPrint('c', "T1");
             this.code.AddLast(this.isFunc + "T0 = T0 + 1;");
             this.code.AddLast(this.isFunc + "goto L0;");
             this.code.AddLast(this.isFunc + "L1:");
@@ -369,10 +370,12 @@ namespace Traductor_Pascal_C3D.traductor.generador
             addStartFunc("native_compare_str_str", "void");
             addExpression("T2", "0", "", "");
             addLabel("L0");
-            addIf("(int)Heap[(int)T0]", "(int)Heap[(int)T1]","==","L1");
+            addExpression("T3", "Heap[(int)T1]");
+            addExpression("T4", "Heap[(int)T0]");
+            addIf("T4", "T3","==","L1");
             addGoto("L2");
             addLabel("L1");
-            addIf("(int)Heap[(int)T0]","-1","==","L3");
+            addIf("T4","-1","==","L3");
             addExpression("T0", "T0", "1", "+");
             addExpression("T1", "T1", "1", "+");
             addGoto("L0");

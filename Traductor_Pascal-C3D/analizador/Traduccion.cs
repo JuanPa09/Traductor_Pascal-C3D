@@ -56,6 +56,9 @@ namespace Traductor_Pascal_C3D.analizador
             Generador generador = Generador.getInstance();
             generador.addHeader();
             consola.Text = generador.getCode();
+
+            
+
         }
 
         public LinkedList<Instruccion> instrucciones(ParseTreeNode actual)
@@ -362,7 +365,11 @@ namespace Traductor_Pascal_C3D.analizador
                     /*LinkedList<Dictionary<string, int>> diccionarios = new LinkedList<Dictionary<string, int>>();
                     getDimensiones(actual.ChildNodes[4], ref diccionarios);
                     listaDeclaraciones.AddLast(new NuevoArreglo(actual.ChildNodes[0].Token.Text, diccionarios, getTipo(actual.ChildNodes[7]), actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column));
-                    */break;
+                    */
+                    LinkedList<Dictionary<int, int>> dimensiones = new LinkedList<Dictionary<int, int>>();
+                    getDimensiones(actual.ChildNodes[4], ref dimensiones);
+                    listaDeclaraciones.AddLast(new Traductor_Pascal_C3D.traductor.instruccion.variables.DeclararArray(new DeclaracionArray(new SymbolArray(getTipo(actual.ChildNodes[7]), actual.ChildNodes[0].Token.Text, dimensiones), actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column), actual.ChildNodes[0].Token.Location.Line, actual.ChildNodes[0].Token.Location.Column));
+                    break;
             }
             return null;
 

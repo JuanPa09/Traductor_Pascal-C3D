@@ -15,7 +15,7 @@ namespace Traductor_Pascal_C3D.analizador
             var Decimal = new RegexBasedTerminal("DOUBLE", "[0-9]+[.][0-9]+");
             var Cadena = new RegexBasedTerminal("CADENA", "\'[^\']*\'");
 
-            var Comentario_Simple = new CommentTerminal("Comentario_Simple", "//", "\n", "\r\n");
+            var Comentario_Simple = new CommentTerminal("Comentario_Simple", "//", "\n" ,"\r\n");
             var Comentario_Multi1 = new CommentTerminal("Comentario_Multilinea1", "(*", "*)");
             var Comentario_Multi2 = new CommentTerminal("Comentario_Multilinea2", "{", "}");
 

@@ -70,6 +70,49 @@ namespace Traductor_Pascal_C3D.analizador
 
         }
 
+        public void optimizar(string cadena)
+        {
+            GramaticaC3D gramaticaC3D = new GramaticaC3D();
+            LanguageData languageData = new LanguageData(gramaticaC3D);
+            foreach(var item in languageData.Errors)
+            {
+                Debug.WriteLine(item);
+            }
+            Parser parser = new Parser(languageData);
+            ParseTree arbol = parser.Parse(cadena);
+            ParseTreeNode raiz = arbol.Root;
+            if (arbol.ParserMessages.Count > 0)
+            {
+                int i = 1;
+                foreach (var item in arbol.ParserMessages)
+                {
+                    //Error Lexico
+                    if (item.Message.Contains("Invalid character"))
+                    {
+                        Debug.WriteLine(i + ") Error Sintáctico: Linea " + item.Location.Line + " Columna: " + item.Location.Column + "Mensaje: " + item.Message);
+                        debuggerConsole.AppendText("Error Sintáctico: Linea " + item.Location.Line + " Columna: " + item.Location.Column + "Mensaje: " + item.Message + "\n\n");
+                    }
+                    //Error Sintactico
+                    else
+                    {
+                        Debug.WriteLine("Error Sintáctico: Linea " + item.Location.Line + " Columna: " + item.Location.Column + " Mensaje: " + item.Message);
+                        debuggerConsole.AppendText(i + ") Error Sintáctico: Linea " + item.Location.Line + " Columna: " + item.Location.Column + " Mensaje: " + item.Message + "\n\n");
+                    }
+                    i++;
+                }
+            }
+            if (raiz == null)
+            {
+                Debug.WriteLine(arbol.ParserMessages[0].Message);
+                debuggerConsole.AppendText(arbol.ParserMessages[0].Message + "\n");
+                return;
+            }
+            Optimizacion optimizacion = new Optimizacion(raiz, Salida, reporte);
+            debuggerConsole.Text = "";
+            optimizacion.iniciar();
+            generarGrafo(raiz);
+        }
+
         public void generarGrafo(ParseTreeNode raiz)
         {
 

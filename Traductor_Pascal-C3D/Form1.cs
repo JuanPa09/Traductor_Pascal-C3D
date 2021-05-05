@@ -132,6 +132,17 @@ namespace Traductor_Pascal_C3D
         private void button2_Click(object sender, EventArgs e)
         {
             reporte.limpiarLista();
+            Debugger.Text = "";
+            Salida.Text = "";
+            reporte.limpiarLista();
+            //Generador generador = Generador.getInstance();
+            //generador.clearCode();
+            Analizador analizador = new Analizador(Debugger, Salida, reporte);
+            Debug.WriteLine("Iniciando Optimización");
+            Debugger.AppendText("Iniciando Optimización\n");
+            analizador.optimizar(Entrada.Text);
+            Debugger.AppendText("Finalizando Optimización");
+            Debug.WriteLine("Finalizando Optimización");
         }
 
         private void button4_Click(object sender, EventArgs e)
