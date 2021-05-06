@@ -42,6 +42,8 @@ namespace Traductor_Pascal_C3D.optimizador.instrucciones
                         derecha.valor = "";
                     if (derecha.valor == "" || izquierda.valor == "")
                         operador = "";
+                    if (derecha.valor == "" && izquierda.valor == "")
+                        return null;
                     if (operador == "" && (Target == izquierda.valor || Target == derecha.valor))
                     {
                         reporte.newOptimizacion("Bloques", "6", Target + "=" + valIzquierda + "+" + valDerecha, "", this.line);

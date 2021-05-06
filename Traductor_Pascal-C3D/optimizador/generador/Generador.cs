@@ -71,6 +71,8 @@ namespace Traductor_Pascal_C3D.optimizador.generador
         {
             this.cancelarBusqueda(); ////////////
             this.asignaciones.Clear(); ///////////////
+            this.etiqueta = "";
+            this.buscando = false;
             if (!buscando)
             {
                 codigo.AddLast("return;");

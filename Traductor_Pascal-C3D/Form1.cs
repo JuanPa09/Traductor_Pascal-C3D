@@ -127,6 +127,8 @@ namespace Traductor_Pascal_C3D
         private void button3_Click(object sender, EventArgs e)
         {
 
+            reporte.generarReporte();
+
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -155,6 +157,14 @@ namespace Traductor_Pascal_C3D
         {
             Salida.Focus();
             Salida.SelectAll();
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            Debugger.Text = "";
+            Traductor_Pascal_C3D.optimizador.reporte.Reporte reporte = optimizador.reporte.Reporte.getInstance();
+            reporte.setConsola(Debugger);
+            reporte.realizarReporte();
         }
     }
 }

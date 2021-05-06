@@ -49,7 +49,7 @@ namespace Traductor_Pascal_C3D.traductor.reportes
         public void generarReporte()
         {
 
-            string path = "C:\\compiladores2\\reporte.html";
+            string path = "C:\\compiladores2\\reporteErrores.html";
 
             string reporte = "<html><title>Errores Lexicos</title><body><center><h1>Reporte De Errores</h1></center><br><br><center>";
             reporte += "<table style=\"width: 100%\">";

@@ -106,7 +106,7 @@ namespace Traductor_Pascal_C3D.optimizador.instrucciones
                             operador = "==";
                             break;
                     }
-                    string codigoOptimizado = "if (" + this.left + this.operador + this.right + ") goto " + falseLbl + ";";
+                    string codigoOptimizado = "if (" + left.valor + this.operador + right.valor + ") goto " + falseLbl + ";";
                     generador.addIf(left.valor, right.valor, operador, falseLbl);
                     reporte.newOptimizacion("Bloques", "2", codigoNormal, codigoOptimizado, fila);
                 }

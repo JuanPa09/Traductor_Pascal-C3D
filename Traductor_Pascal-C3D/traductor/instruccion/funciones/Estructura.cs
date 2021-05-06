@@ -30,24 +30,46 @@ namespace Traductor_Pascal_C3D.traductor.instruccion.funciones
             generador.addNativaCompareString();
             generador.addNativa_Concat_Str_Str();
             generador.addNativa_Concat_Str_Num();
+
+            generador.addStartFunc("variables", "void");
+            foreach(Instruccion instruccion in instruccionesHead)
+            {
+                try
+                {
+                    Debug.WriteLine(instruccion.GetType().Name);
+                    if(instruccion.GetType().Name == "DeclararVariables")
+                    {
+                        instruccion.compile(entorno, reporte);
+                        instruccion.compile(entorno, reporte);
+                    }
+                    else if(instruccion.GetType().Name == "StructSt")
+                    {
+                        instruccion.compile(entorno, reporte);
+                    }else if (instruccion.GetType().Name == "NuevoArray")
+                    {
+                        instruccion.compile(entorno, reporte);
+                    }
+
+
+                }catch(Exception ex)
+                {
+                    Debug.WriteLine(ex.ToString());
+                }
+            }
+            generador.addReturn("");
+            generador.addEndFunc();
+
             foreach (Instruccion instruccion in instruccionesHead)
             {
                 if (instruccion != null)
                 {
                     try
                     {
-
-                        /*if(instruccion.GetType().Name == "DeclararVariables")
-                        {
+                        /*if (instruccion.GetType().Name == "DeclararVariables")
                             variables.AddLast(instruccion);
-                        }
-                        else
-                        {
+                        instruccion.compile(entorno, reporte);*/
+                        if (instruccion.GetType().Name != "DeclararVariables" && instruccion.GetType().Name != "StructSt" && instruccion.GetType().Name != "NuevoArray")
                             instruccion.compile(entorno, reporte);
-                        }*/
-                        if (instruccion.GetType().Name == "DeclararVariables")
-                            variables.AddLast(instruccion);
-                        instruccion.compile(entorno, reporte);
                     }
                     catch (Exception ex)
                     {
@@ -59,7 +81,8 @@ namespace Traductor_Pascal_C3D.traductor.instruccion.funciones
 
             generador.addStartFunc("main", "void");
 
-            foreach (Instruccion instruccion in variables)
+            generador.addCall("variables");
+            /*foreach (Instruccion instruccion in variables)
             {
                 try
                 {
@@ -69,7 +92,7 @@ namespace Traductor_Pascal_C3D.traductor.instruccion.funciones
                 {
                     Debug.WriteLine(ex.ToString());
                 }
-            }
+            }*/
 
             foreach (Instruccion instruccion in instruccionesBody)
             {
@@ -87,46 +110,6 @@ namespace Traductor_Pascal_C3D.traductor.instruccion.funciones
             }
             generador.addReturn("");
             generador.addEndFunc();
-
-            /*generador.addStartFunc("main", "void");
-
-            /*foreach (Instruccion instruccion in instruccionesHead)
-            {
-                try
-                {
-                    if(instruccion.GetType().Name == "DeclararVariables")
-                    {
-                        instruccion.compile(entorno, reporte);
-                        instruccion.compile(entorno, reporte);
-                    }
-                }
-                catch (Exception ex) { Debug.WriteLine(ex.ToString()); }
-            }
-
-            foreach(Instruccion instruccion in instruccionesBody)
-            {
-                try
-                {
-                    instruccion.compile(entorno,reporte);
-                }
-                catch (Exception ex) { Debug.WriteLine(ex.ToString()); }
-            }
-
-
-            generador.addReturn("");
-            generador.addEndFunc();
-
-            foreach(Instruccion instruccion in instruccionesHead)
-            {
-                try
-                {
-                    if(instruccion.GetType().Name != "DeclararVariables")
-                    {
-                        instruccion.compile(entorno, reporte);
-                    }
-                }
-                catch (Exception ex) { Debug.WriteLine(ex.ToString()); }
-            }*/
 
             return null;
         }

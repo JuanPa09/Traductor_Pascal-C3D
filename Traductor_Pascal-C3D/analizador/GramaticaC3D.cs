@@ -33,6 +33,7 @@ namespace Traductor_Pascal_C3D.analizador
             var Coma = ToTerm(",");
             var PtComa = ToTerm(";");
             var dsPts = ToTerm(":");
+            var Pt = ToTerm(".");
             var Print = ToTerm("printf");
             var charPrint = ToTerm("\"%c\"");
             var decPrint = ToTerm("\"%d\"");
@@ -41,6 +42,7 @@ namespace Traductor_Pascal_C3D.analizador
             var punteroHeap = ToTerm("h");
             var _if = ToTerm("if");
             var _void = ToTerm("void");
+            var num = ToTerm("#");
             var por = ToTerm("*");
             var div = ToTerm("/");
             var mod = ToTerm("%");
@@ -57,6 +59,7 @@ namespace Traductor_Pascal_C3D.analizador
             var entero = ToTerm("int");
             var stack = ToTerm("Stack");
             var heap = ToTerm("Heap");
+            var _float = ToTerm("float");
             var _return = ToTerm("return");
             NonGrammarTerminals.Add(comentarios);
             #endregion
@@ -83,11 +86,13 @@ namespace Traductor_Pascal_C3D.analizador
             NonTerminal METODO = new NonTerminal("METODO");
             NonTerminal ESTRUCTURA = new NonTerminal("ESTRUCTURA");
             NonTerminal VALORESTRUCTURA = new NonTerminal("VALORESTRUCTURA");
+            NonTerminal ENCABEZADO = new NonTerminal("ENCABEZADO");
+            NonTerminal TEMPORALES = new NonTerminal("TEMPORALES");
             #endregion
 
             #region Gramatica
             INICIO.Rule
-                                = ELEMENTOS
+                                = ENCABEZADO + ELEMENTOS
                                 ;
 
             ELEMENTOS.Rule
@@ -196,6 +201,15 @@ namespace Traductor_Pascal_C3D.analizador
                                 | VARIABLE + igual + VALOR + mod + VALOR + PtComa
                                 ;
 
+            ENCABEZADO.Rule
+                                = num + Identificador + men + Identificador + Pt + Identificador + may + _float + ESTRUCTURA + CorIzq + Entero + CorDer + PtComa + _float + ESTRUCTURA + CorIzq + Entero + CorDer + PtComa + _float + VARIABLE + PtComa + _float + VARIABLE + PtComa + _float + TEMPORALES + PtComa
+                                | num + Identificador + men + Identificador + Pt + Identificador + may + _float + ESTRUCTURA + CorIzq + Entero + CorDer + PtComa + _float + ESTRUCTURA + CorIzq + Entero + CorDer + PtComa + _float + VARIABLE + PtComa + _float + VARIABLE + PtComa
+                                ;
+
+            TEMPORALES.Rule
+                                = TEMPORALES + Coma + Tmp
+                                | Tmp
+                                ;
             /*VALORESTRUCTURA.Rule
                                 = ESTRUCTURA + CorIzq + ParIzq + entero + ParDer + VALOR + CorDer
                                 ;*/
@@ -205,6 +219,8 @@ namespace Traductor_Pascal_C3D.analizador
             #region Preferencias
             this.Root = INICIO;
             this.RegisterOperators(0,minus,mas,menos);
+
+
             #endregion
 
 

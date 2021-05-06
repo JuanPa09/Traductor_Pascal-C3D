@@ -47,11 +47,17 @@ namespace Traductor_Pascal_C3D.analizador
 
             foreach(ParseTreeNode nodo in nodoRaiz.ChildNodes)
             {
+
+                
+
                 if (nodo.Term.ToString() != "INSTRUCCION")
                 {
                     if (nodo.ChildNodes.Count > 0 && nodo.ChildNodes[0].Term.ToString() == "METODO")
                     {
                         instrs.AddLast(instruccion(nodo.ChildNodes[0]));
+                    }else if (nodo.Term.ToString() == "ENCABEZADO")
+                    {
+                        armarEncabezado(nodo);
                     }
                     else
                     {
@@ -94,11 +100,11 @@ namespace Traductor_Pascal_C3D.analizador
             switch (actual.ChildNodes.Count)
             {
                 case 8:
-                    return new Metodo(actual.ChildNodes[0].Token.Text,null);
+                    return new Metodo(actual.ChildNodes[1].Token.Text,null);
                 default:
                     LinkedList<Optimizar> instrucciones = new LinkedList<Optimizar>();
                     this.instrucciones(actual.ChildNodes[5], ref instrucciones);
-                    return new Metodo(actual.ChildNodes[0].Token.Text,instrucciones);
+                    return new Metodo(actual.ChildNodes[1].Token.Text,instrucciones);
             }
         }
 
@@ -116,7 +122,7 @@ namespace Traductor_Pascal_C3D.analizador
                     switch (actual.ChildNodes[0].Term.ToString())
                     {
                         case "VARIABLE":
-                            return new Asignacion(actual.ChildNodes[0].ChildNodes[0].Token.ToString(),new Valor(actual.ChildNodes[2].ChildNodes[0].Token.Text+"[(int)"+getValor(actual.ChildNodes[7])+"]",false),true,linea);
+                            return new Asignacion(actual.ChildNodes[0].ChildNodes[0].Token.Text,new Valor(actual.ChildNodes[2].ChildNodes[0].Token.Text+"[(int)"+getValor(actual.ChildNodes[7])+"]",false),true,linea);
                         default:
                             return new Asignacion(actual.ChildNodes[0].ChildNodes[0].Token.Text+"[(int)"+getValor(actual.ChildNodes[5])+"]",VALOR(actual.ChildNodes[8]),true,linea);
                     }
@@ -220,6 +226,56 @@ namespace Traductor_Pascal_C3D.analizador
             return null;
         }
         
+        public void armarEncabezado(ParseTreeNode actual)
+        {
+            Generador generador = Generador.getInstance();
+            string codigo = "";
+            foreach (ParseTreeNode elemento in actual.ChildNodes)
+            {
+                switch (elemento.Term.ToString())
+                {
+                    case "VARIABLE":
+                        codigo += elemento.ChildNodes[0].Token.Text;
+                        break;
+                    case "TEMPORALES":
+                        codigo += getTemporales(elemento);
+                        break;
+                    case "ESTRUCTURA":
+                        codigo += elemento.ChildNodes[0].Token.Text;
+                        break;
+                    case "#":
+                    case "ID":
+                    case "<":
+                        codigo += elemento.Token.Text + "";
+                        break;
+                    case ">":
+                        generador.addCode(codigo + ">");
+                        codigo = "";
+                        break;
+                    case ";":
+                        generador.addCode(codigo + ";");
+                        codigo = "";
+                        break;
+                    case ".":
+                        codigo += elemento.Token.Text + "";
+                        break;
+                    default:
+                        codigo += elemento.Token.Text + " ";
+                        break;
+                }
+            }
+        }
+
+        public string getTemporales(ParseTreeNode actual)
+        {
+            switch (actual.ChildNodes.Count)
+            {
+                case 3:
+                    return getTemporales(actual.ChildNodes[0]) + "," + actual.ChildNodes[2].Token.Text;
+                default:
+                    return actual.ChildNodes[0].Token.Text;
+            }
+        }
 
     }
 }

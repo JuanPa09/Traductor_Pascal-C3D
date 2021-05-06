@@ -163,7 +163,7 @@ namespace Traductor_Pascal_C3D.traductor.variables
                 {
                     SymbolArray _array = entorno.getArray(this.type.typeId);
                     if(_array == null)
-                        throw new ErroPascal(this.line, this.column, "No existe el struct " + this.type.typeId, "Semántico");
+                        throw new ErroPascal(this.line, this.column, "No existe el type " + this.type.typeId, "Semántico");
                 }
                 else
                 {

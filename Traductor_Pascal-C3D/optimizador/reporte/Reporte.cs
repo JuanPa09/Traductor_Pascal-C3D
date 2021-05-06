@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using System.Windows.Forms;
 
 namespace Traductor_Pascal_C3D.optimizador.reporte
 {
     class Reporte
     {
         private static Reporte reporte;
-        LinkedList<Contenido> optimizaciones; 
-        
+        LinkedList<Contenido> optimizaciones;
+        RichTextBox consola;
 
         private Reporte()
         {
@@ -60,9 +61,10 @@ namespace Traductor_Pascal_C3D.optimizador.reporte
                     byte[] info = new UTF8Encoding(true).GetBytes(reporte);
                     fs.Write(info, 0, info.Length);
                 }
+                this.consola.AppendText("Reporte De Optimización Generado Con Éxito!");
             }catch (Exception ex)
             {
-                
+                this.consola.AppendText(ex.ToString());
             }
         }
 
@@ -71,6 +73,10 @@ namespace Traductor_Pascal_C3D.optimizador.reporte
             this.optimizaciones.Clear();
         }
 
+        public void setConsola(RichTextBox consola)
+        {
+            this.consola = consola;
+        }
 
         class Contenido
         {
