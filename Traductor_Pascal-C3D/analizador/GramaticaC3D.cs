@@ -135,7 +135,6 @@ namespace Traductor_Pascal_C3D.analizador
             ASIGNACION.Rule
                                 = ESTRUCTURA + CorIzq + ParIzq + entero + ParDer + VALOR + CorDer + igual + VALOR + PtComa
                                 | VARIABLE + igual + VALOR + PtComa
-                                | VARIABLE + igual + ESTRUCTURA + PtComa
                                 | VARIABLE + igual + ESTRUCTURA + CorIzq + ParIzq + entero + ParDer + VALOR + CorDer + PtComa
                                 ;
 

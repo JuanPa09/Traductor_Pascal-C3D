@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="optimizador\instrucciones\Etiqueta.cs~RF617fd0f3.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Irony">
       <HintPath>\lib\Irony.dll</HintPath>
     </Reference>

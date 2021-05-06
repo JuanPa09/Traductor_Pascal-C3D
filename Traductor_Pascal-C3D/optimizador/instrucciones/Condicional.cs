@@ -12,12 +12,12 @@ namespace Traductor_Pascal_C3D.optimizador.instrucciones
     {
         Evaluar left;
         Evaluar right;
-        Evaluar operador;
+        string operador;
         string trueLbl;
-        Optimizar falseLbl;
+        string falseLbl;
         string fila;
 
-        public Condicional(Evaluar left, Evaluar right, Evaluar operador, string trueLbl, Optimizar falseLbl, string fila)
+        public Condicional(Evaluar left, Evaluar right, string operador, string trueLbl, string falseLbl, string fila)
         {
             this.left = left;
             this.right = right;
@@ -33,16 +33,36 @@ namespace Traductor_Pascal_C3D.optimizador.instrucciones
             Reporte reporte = Reporte.getInstance();
             Simbolo left = this.left.evaluar();
             Simbolo right = this.right.evaluar();
-            Simbolo operador = this.operador.evaluar();
-            string falseLbl =  this.falseLbl!=null?this.falseLbl.optimizar():null;
-            string codigoNormal = "if (" + left.valor + operador.valor + right.valor + ") goto " + trueLbl + ";\ngoto " + falseLbl + ";";
+            string codigoNormal = "if (" + left.valor + operador + right.valor + ") goto " + trueLbl + ";\ngoto " + falseLbl + ";";
 
             if (left.isConst && right.isConst)
             {
-                double num_left = double.Parse(left.valor);
-                double num_right = double.Parse(right.valor);
+                double num_left = double.Parse(left.valor.ToString());
+                double num_right = double.Parse(right.valor.ToString());
                 string codigoOptimizado = "";
-                bool operacion = bool.Parse(num_left.ToString() + operador.valor + num_right.ToString());
+                bool operacion = false;
+                switch (operador)
+                {
+                    case "==":
+                        operacion = double.Parse(num_left.ToString()) == double.Parse(num_right.ToString());
+                        break;
+                    case "!=":
+                        operacion = double.Parse(num_left.ToString()) != double.Parse(num_right.ToString());
+                        break;
+                    case ">=":
+                        operacion = double.Parse(num_left.ToString()) >= double.Parse(num_right.ToString());
+                        break;
+                    case ">":
+                        operacion = double.Parse(num_left.ToString()) > double.Parse(num_right.ToString());
+                        break;
+                    case "<=":
+                        operacion = double.Parse(num_left.ToString()) <= double.Parse(num_right.ToString());
+                        break;
+                    case "<":
+                        operacion = double.Parse(num_left.ToString()) < double.Parse(num_right.ToString());
+                        break;
+                }
+
                 string regla = "";
                 if (operacion)
                 {
@@ -65,34 +85,34 @@ namespace Traductor_Pascal_C3D.optimizador.instrucciones
             {
                 if (falseLbl != null)
                 {
-                    switch (operador.valor)
+                    switch (operador)
                     {
                         case "==":
-                            operador.valor = "!=";
+                            operador = "!=";
                             break;
                         case ">=":
-                            operador.valor = "<";
+                            operador = "<";
                             break;
                         case ">":
-                            operador.valor = "<=";
+                            operador = "<=";
                             break;
                         case "<=":
-                            operador.valor = ">";
+                            operador = ">";
                             break;
                         case "<":
-                            operador.valor = ">=";
+                            operador = ">=";
                             break;
                         case "!=":
-                            operador.valor = "==";
+                            operador = "==";
                             break;
                     }
                     string codigoOptimizado = "if (" + this.left + this.operador + this.right + ") goto " + falseLbl + ";";
-                    generador.addIf(left.valor, right.valor, operador.valor, falseLbl);
+                    generador.addIf(left.valor, right.valor, operador, falseLbl);
                     reporte.newOptimizacion("Bloques", "2", codigoNormal, codigoOptimizado, fila);
                 }
                 else
                 {
-                    generador.addIf(left.valor, right.valor, operador.valor, trueLbl);
+                    generador.addIf(left.valor, right.valor, operador, trueLbl);
                 }
             }
 

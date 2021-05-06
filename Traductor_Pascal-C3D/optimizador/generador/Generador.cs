@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Traductor_Pascal_C3D.optimizador.reporte;
+using System.Linq;
 
 namespace Traductor_Pascal_C3D.optimizador.generador
 {
@@ -11,6 +12,7 @@ namespace Traductor_Pascal_C3D.optimizador.generador
         Reporte reporte;
         LinkedList<string> codigo;
         LinkedList<string> codigoBorrado;
+        LinkedList<Declaracion> asignaciones;
         string isFunc = "";
         bool buscando = false;
         string etiqueta = "";
@@ -23,6 +25,7 @@ namespace Traductor_Pascal_C3D.optimizador.generador
             this.codigo = new LinkedList<string>();
             this.codigoBorrado = new LinkedList<string>();
             this.reporte = Reporte.getInstance();
+            this.asignaciones = new LinkedList<Declaracion>();
         }
 
         public static Generador getInstance()
@@ -32,6 +35,23 @@ namespace Traductor_Pascal_C3D.optimizador.generador
                 generador = new Generador();
             }
             return generador;
+        }
+
+        public void clearData()
+        {
+            codigo.Clear();
+            codigoBorrado.Clear();
+            asignaciones.Clear();
+            buscando = false;
+            etiqueta = "";
+            linea = "";
+        }
+
+        public void addCall(string nombre)
+        {
+            this.cancelarBusqueda(); //////////////
+            this.asignaciones.Clear(); /////////////
+            this.codigo.AddLast(this.isFunc + nombre + "();");
         }
 
         public void addFunc(string nombre)
@@ -49,6 +69,8 @@ namespace Traductor_Pascal_C3D.optimizador.generador
 
         public void addEndFunc()
         {
+            this.cancelarBusqueda(); ////////////
+            this.asignaciones.Clear(); ///////////////
             if (!buscando)
             {
                 codigo.AddLast("return;");
@@ -75,16 +97,52 @@ namespace Traductor_Pascal_C3D.optimizador.generador
             }
         }
 
-        public void addExpression(string target, string left, string right = "", string op = "")
+        public void addExpression(string target, string left, string right = "", string op = "",string line = "")
         {
-            if (!buscando)
+            string valor = left == "" ? right : left;
+            if(op == "")
             {
-                codigo.AddLast(this.isFunc + target + op + right + ";");
+                foreach(Declaracion dato in asignaciones)
+                {
+                    if(dato.target == target && dato.value == valor)
+                    {
+                        reporte.newOptimizacion("Bloques", "5", target + "=" + valor, "", line);
+                        return;
+                    }
+                }
+
+                if (!buscando)
+                {
+                    codigo.AddLast(this.isFunc + target + " = " + left + op + right + ";");
+                }
+                else
+                {
+                    codigoBorrado.AddLast(this.isFunc + target + " = " + left + op + right + ";");
+                }
+                asignaciones.AddLast(new Declaracion(valor,target));
             }
             else
             {
-                codigoBorrado.AddLast(this.isFunc + target + op + right + ";");
+                foreach (Declaracion dato in asignaciones)
+                {
+                    if (dato.value == target)
+                    {
+                        deleteTargetValue(dato.value);
+                        break;
+                    }
+                }
+
+                if (!buscando)
+                {
+                    codigo.AddLast(this.isFunc + target + " = " + left + op + right + ";");
+                }
+                else
+                {
+                    codigoBorrado.AddLast(this.isFunc + target + " = " + left + op + right + ";");
+                }
             }
+
+            
         }
 
         public void addCode(string code)
@@ -101,8 +159,9 @@ namespace Traductor_Pascal_C3D.optimizador.generador
 
         public void addGoto(string lbl,string linea)
         {
+            this.asignaciones.Clear();
             this.cancelarBusqueda();
-            this.codigo.AddLast(this.isFunc + "goto" + lbl + ";");
+            this.codigo.AddLast(this.isFunc + "goto " + lbl + ";");
             this.buscandoEtiqueta(lbl, linea);
             this.etiqueta = lbl;
             this.buscando = true;
@@ -110,7 +169,7 @@ namespace Traductor_Pascal_C3D.optimizador.generador
         
         public void addLabel(string lbl)
         {
-            codigo.AddLast(lbl + ":");
+            asignaciones.Clear();
             if(lbl == this.etiqueta)
             {
                 borrarCodigo();
@@ -119,6 +178,7 @@ namespace Traductor_Pascal_C3D.optimizador.generador
             {
                 cancelarBusqueda();
             }
+            codigo.AddLast(lbl + ":");
         }
 
         public void buscandoEtiqueta(string lbl, string linea)
@@ -143,6 +203,40 @@ namespace Traductor_Pascal_C3D.optimizador.generador
             reporte.newOptimizacion("Bloques", "1", deletedCode, "", linea);
             this.codigoBorrado.Clear();
             
+        }
+
+        public string getCode()
+        {
+            return string.Join("\n", this.codigo);
+        }
+
+        public void deleteTargetValue(string value)
+        {
+            LinkedList<Declaracion> dec = new LinkedList<Declaracion>();
+            foreach(Declaracion declaracion in asignaciones)
+            {
+                if(declaracion.value == value)
+                {
+                    dec.AddLast(declaracion);
+                }
+            }
+            foreach(Declaracion ds in dec)
+            {
+                asignaciones.Remove(ds);
+            }
+            dec.Clear();
+        }
+
+        class Declaracion
+        {
+            public string target;
+            public string value;
+
+            public Declaracion(string target,string value)
+            {
+                this.target = target;
+                this.value = value;
+            }
         }
 
     }

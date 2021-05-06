@@ -107,7 +107,7 @@ namespace Traductor_Pascal_C3D.analizador
                 debuggerConsole.AppendText(arbol.ParserMessages[0].Message + "\n");
                 return;
             }
-            Optimizacion optimizacion = new Optimizacion(raiz, Salida, reporte);
+            Optimizacion optimizacion = new Optimizacion(raiz, Salida);
             debuggerConsole.Text = "";
             optimizacion.iniciar();
             generarGrafo(raiz);
