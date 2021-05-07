@@ -32,7 +32,7 @@ namespace Traductor_Pascal_C3D.traductor.variables
             generador.addComment("Inicia Declaracion De Array");
             this.validateType(entorno);
             this.type.dimension = dimensiones.Count;
-            Simbolo newVar = entorno.addVar(this.id, this.type, false, false);
+            Simbolo newVar = entorno.addVar(this.id, this.type, false, false,this.line,this.column);
             if (newVar == null)
                 throw new ErroPascal(this.line, this.column, "No se pudo declarar el array " + this.id, "Semantico");
 

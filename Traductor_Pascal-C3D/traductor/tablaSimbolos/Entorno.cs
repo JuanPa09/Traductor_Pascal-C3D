@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Traductor_Pascal_C3D.traductor.instruccion.funciones;
 using Traductor_Pascal_C3D.traductor.utils;
+using Traductor_Pascal_C3D.traductor.reportes;
 
 namespace Traductor_Pascal_C3D.traductor.tablaSimbolos
 {
@@ -24,6 +25,8 @@ namespace Traductor_Pascal_C3D.traductor.tablaSimbolos
 
         public SymbolFunction actualFunc = null;
 
+        private Reporte reporte;
+
         public Entorno(Entorno anterior)
         {
             this.anterior = anterior;
@@ -37,6 +40,7 @@ namespace Traductor_Pascal_C3D.traductor.tablaSimbolos
             this._continue = (anterior != null ? anterior._continue : new LinkedList<string>());
             this.prop = "main";
             this.actualFunc = (anterior != null ? anterior.actualFunc : null);
+            this.reporte = Reporte.getInstance();
         }
 
         public void setEnvironmentFunc(string prop, SymbolFunction actualFunc, string ret)
@@ -47,24 +51,27 @@ namespace Traductor_Pascal_C3D.traductor.tablaSimbolos
             this.actualFunc = actualFunc;
         }
 
-        public Simbolo addVar(string id, utils.Type type, bool isConst, bool isRef)
+        public Simbolo addVar(string id, utils.Type type, bool isConst, bool isRef,int line, int column)
         {
             id = id.ToLower();
             if(vars.Count == 0 || !this.vars.ContainsKey(id))
             {
                 Simbolo newVar = new Simbolo(type, id, this.size++, isConst, this.anterior == null, isRef);
                 this.vars.Add(id, newVar);
+                reporte.nuevoSimbolo(id, type.type.ToString(), this.prop, line, column);
                 return newVar;
             }
             return null;
             
         }
 
-        public bool addFunc(FunctionSt func, string uniqueId)
+        public bool addFunc(FunctionSt func, string uniqueId,int line, int column)
         {
             if (this.functions.ContainsKey(func.id.ToLower()))
                 return false;
             this.functions.Add(func.id.ToLower(), new SymbolFunction(func, uniqueId));
+            reporte.nuevoSimbolo(uniqueId, "Funcion/Procedimiento", this.prop, line, column);
+
             return true;
         }
 
@@ -170,7 +177,7 @@ namespace Traductor_Pascal_C3D.traductor.tablaSimbolos
         }
 
 
-        public bool addStruct(string id, int size,LinkedList<Param> @params)
+        public bool addStruct(string id, int size,LinkedList<Param> @params,int line, int column)
         {
             if (this.structs.ContainsKey(id.ToLower()))
             {
@@ -179,6 +186,7 @@ namespace Traductor_Pascal_C3D.traductor.tablaSimbolos
             else
             {
                 this.structs.Add(id.ToLower(), new SymbolStruct(id.ToLower(), size, @params));
+                reporte.nuevoSimbolo(id, "type", this.prop, line, column);
                 return true;
             }
         }
@@ -193,11 +201,12 @@ namespace Traductor_Pascal_C3D.traductor.tablaSimbolos
             return null;
         }
 
-        public bool addArray(string id, utils.Type type, LinkedList<Dictionary<int, int>> dimensiones)
+        public bool addArray(string id, utils.Type type, LinkedList<Dictionary<int, int>> dimensiones,int line, int column)
         {
             if (arrays.ContainsKey(id))
                 return false;
             arrays.Add(id, new SymbolArray(type, id, dimensiones));
+            reporte.nuevoSimbolo(id, "Type", this.prop, line, column);
             return true;
         }
 

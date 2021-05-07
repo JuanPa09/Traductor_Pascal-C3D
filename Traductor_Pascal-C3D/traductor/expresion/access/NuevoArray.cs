@@ -23,7 +23,7 @@ namespace Traductor_Pascal_C3D.traductor.expresion.access
 
         public override object compile(Entorno entorno, Reporte reporte)
         {
-            bool newArray = entorno.addArray(id, type, dimensiones);
+            bool newArray = entorno.addArray(id, type, dimensiones,this.line,this.column);
             if (!newArray)
                 throw new ErroPascal(this.line, this.column, "El arreglo tipo " + id + " ya existe", "Semantico");
             return null;

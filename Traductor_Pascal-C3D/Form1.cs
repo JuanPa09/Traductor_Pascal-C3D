@@ -166,5 +166,11 @@ namespace Traductor_Pascal_C3D
             reporte.setConsola(Debugger);
             reporte.realizarReporte();
         }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            Debugger.Text = "";
+            reporte.reporteSimbolos();
+        }
     }
 }

@@ -95,7 +95,7 @@ namespace Traductor_Pascal_C3D.traductor.variables
                         SymbolArray symbolArray = entorno.getArray(this.type.typeId);//
                         value.type = symbolArray.type;//
                     }//
-                    Simbolo newVar = entorno.addVar(id, value.type.type == Types.NULLL ? this.type : value.type, false, false);
+                    Simbolo newVar = entorno.addVar(id, value.type.type == Types.NULLL ? this.type : value.type, false, false,this.line,this.column);
                     if (newVar == null)
                     {
                         error = true;

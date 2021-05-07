@@ -23,7 +23,7 @@ namespace Traductor_Pascal_C3D.traductor.instruccion.funciones
 
         public override object compile(Entorno entorno, Reporte reporte)
         {
-            if (!entorno.addStruct(this.id, this.attributes.Count, this.attributes))
+            if (!entorno.addStruct(this.id, this.attributes.Count, this.attributes,this.line,this.column))
                 throw new ErroPascal(this.line, this.column, "Ya existe un type con el id " + this.id,"Semantico");
             this.validateParams(entorno);
             return null;

@@ -50,7 +50,7 @@ namespace Traductor_Pascal_C3D.traductor.instruccion.funciones
             this.validateParams(entorno);
             this.validateType(entorno);
             string uniqueId = this.uniqueId(entorno);
-            if (!entorno.addFunc(this, uniqueId))
+            if (!entorno.addFunc(this, uniqueId,this.line,this.column))
                 throw new ErroPascal(this.line, this.column, "Ya existe una funcion con el id " + this.id, "Semantico");
 
             SymbolFunction symbolFunction = entorno.getFunc(this.id);
@@ -58,13 +58,14 @@ namespace Traductor_Pascal_C3D.traductor.instruccion.funciones
             {
                 Generador generator = Generador.getInstance();
                 Entorno nuevoEntorno = new Entorno(entorno);
+                nuevoEntorno.prop = this.id;
                 string returnLbl = generator.newLabel();
                 LinkedList<string> tempStorage = generator.getTempStorage();
                 nuevoEntorno.setEnvironmentFunc(this.id, symbolFunction, returnLbl);
 
                 foreach(Param param in _params)
                 {
-                    nuevoEntorno.addVar(param.id, param.type, false, false);
+                    nuevoEntorno.addVar(param.id, param.type, false, false,this.line,this.column);
                 }
                 generator.clearTempStorage();
                 generator.addStartFunc(symbolFunction.uniqueId, "void");
