@@ -44,12 +44,16 @@ namespace Traductor_Pascal_C3D.analizador
                     {
                         Debug.WriteLine(i + ") Error Sintáctico: Linea " + item.Location.Line + " Columna: " + item.Location.Column + "Mensaje: " + item.Message);
                         debuggerConsole.AppendText("Error Sintáctico: Linea " + item.Location.Line + " Columna: " + item.Location.Column + "Mensaje: " + item.Message + "\n\n");
+                        Reporte reporte = Reporte.getInstance();
+                        reporte.nuevoError(item.Location.Line, item.Location.Column, "Lexico", item.Message);
                     }
                     //Error Sintactico
                     else
                     {
                         Debug.WriteLine("Error Sintáctico: Linea " + item.Location.Line + " Columna: " + item.Location.Column + " Mensaje: " + item.Message);
                         debuggerConsole.AppendText(i + ") Error Sintáctico: Linea " + item.Location.Line + " Columna: " + item.Location.Column + " Mensaje: " + item.Message + "\n\n");
+                        Reporte reporte = Reporte.getInstance();
+                        reporte.nuevoError(item.Location.Line, item.Location.Column, "Sintactico", item.Message);
                     }
                     i++;
                 }
