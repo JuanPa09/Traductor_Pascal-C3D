@@ -58,19 +58,22 @@ namespace Traductor_Pascal_C3D.traductor.expresion.access
                     conteo = 1;
                     generador.addGetHeap(tempAux, puntero);
                     generador.addExpression(puntero, puntero, "1", "+");
+                    generador.addComment("Valor minimo");
                     generador.addExpression(min, tempAux);
                     generador.addGetHeap(tempAux, puntero);
                     generador.addExpression(puntero, puntero, "1", "+");
+                    generador.addComment("Valor Maximo");
                     generador.addExpression(max, tempAux);
-                    if(val.isTemp)
-                    {
-                        generador.addGetStack(tempIndex, val.value);
-                    }
-                    else
-                    {
-                        generador.addExpression(tempIndex, val.value);
-                    }
-                    generador.addExpression(temp, tempIndex, min, "-");
+                /*if(val.isTemp)
+                {
+                    generador.addGetStack(tempIndex, val.value);
+                }
+                else
+                {
+                    generador.addExpression(tempIndex, val.value);
+                }*/
+                generador.addExpression(tempIndex, val.value);
+                generador.addExpression(temp, tempIndex, min, "-");
 
             }
             //Paso el valor del heap
@@ -78,7 +81,7 @@ namespace Traductor_Pascal_C3D.traductor.expresion.access
             generador.addExpression(tempAux, tempAux, "1", "+");
             generador.addExpression(temp, temp, tempAux,"+");
             generador.addGetHeap(temp, temp);
-
+            //generador.addCode("/*Temporal de salida*/\nprintf(\"%d\",(int)"+temp+ ");printf(\"%c\",10);\n/*******/\n");
             generador.addComment("Termina Acceso A Array");
 
 

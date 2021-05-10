@@ -9,12 +9,12 @@ namespace Traductor_Pascal_C3D.traductor.tablaSimbolos
     {
         public utils.Type type;
         string identifier;
-        public int position;
+        public string position;
         public bool isConst;
         public bool isGlobal;
         public bool isHeap;
 
-        public Simbolo(utils.Type type, string identifier, int position, bool isConst, bool isGlobal, bool isHeap)
+        public Simbolo(utils.Type type, string identifier, string position, bool isConst, bool isGlobal, bool isHeap)
         {
             this.type = type;
             this.identifier = identifier;

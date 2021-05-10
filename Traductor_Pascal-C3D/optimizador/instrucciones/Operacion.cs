@@ -58,8 +58,8 @@ namespace Traductor_Pascal_C3D.optimizador.instrucciones
                     }
                     break;
                 case "-":
-                    if (izquierda.isConst && izquierda.valor == "0")
-                        izquierda.valor = "";
+                    /*if (izquierda.isConst && izquierda.valor == "0")
+                        izquierda.valor = "";*/
                     if (derecha.isConst && derecha.valor == "0")
                         derecha.valor = "";
                     if (derecha.valor == "" || izquierda.valor == "")

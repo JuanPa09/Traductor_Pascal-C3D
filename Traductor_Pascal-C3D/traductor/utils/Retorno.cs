@@ -12,14 +12,16 @@ namespace Traductor_Pascal_C3D.traductor.utils
         public string trueLabel;
         public string falseLabel;
         public tablaSimbolos.Simbolo simbolo = null;
+        public bool isHeap = false; 
 
-        public Retorno(string value, bool isTemp, utils.Type type, tablaSimbolos.Simbolo simbolo = null)
+        public Retorno(string value, bool isTemp, utils.Type type, tablaSimbolos.Simbolo simbolo = null,bool isHeap = false)
         {
             this.value = value;
             this.isTemp = isTemp;
             this.type = type;
             this.simbolo = simbolo;
             this.trueLabel = this.falseLabel = "";
+            this.isHeap = isHeap;
         }
 
         public string getValue()

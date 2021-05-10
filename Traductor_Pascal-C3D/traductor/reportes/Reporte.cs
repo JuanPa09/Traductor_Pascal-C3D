@@ -51,7 +51,7 @@ namespace Traductor_Pascal_C3D.traductor.reportes
 
             string path = "C:\\compiladores2\\reporteErrores.html";
 
-            string reporte = "<html><title>Errores Lexicos</title><body><center><h1>Reporte De Errores</h1></center><br><br><center>";
+            string reporte = "<html><title>Reporte Errores</title><body><center><h1>Reporte De Errores</h1></center><br><br><center>";
             reporte += "<table style=\"width: 100%\">";
             reporte += "<tr>";
             reporte += "<th style=\"border: 1px solid black; background-color:#DFC93F \">Tipo</th>";

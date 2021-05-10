@@ -51,12 +51,12 @@ namespace Traductor_Pascal_C3D.traductor.tablaSimbolos
             this.actualFunc = actualFunc;
         }
 
-        public Simbolo addVar(string id, utils.Type type, bool isConst, bool isRef,int line, int column)
+        public Simbolo addVar(string id, utils.Type type, bool isConst, bool isHeap,int line, int column,string pos = null)
         {
             id = id.ToLower();
             if(vars.Count == 0 || !this.vars.ContainsKey(id))
             {
-                Simbolo newVar = new Simbolo(type, id, this.size++, isConst, this.anterior == null, isRef);
+                Simbolo newVar = new Simbolo(type, id, pos!=null?pos:(this.size++).ToString(), isConst, this.anterior == null, isHeap);
                 this.vars.Add(id, newVar);
                 reporte.nuevoSimbolo(id, type.type.ToString(), this.prop, line, column);
                 return newVar;
@@ -65,11 +65,11 @@ namespace Traductor_Pascal_C3D.traductor.tablaSimbolos
             
         }
 
-        public bool addFunc(FunctionSt func, string uniqueId,int line, int column)
+        public bool addFunc(FunctionSt func, string uniqueId,int line, int column, LinkedList<Param> _params = null)
         {
             if (this.functions.ContainsKey(func.id.ToLower()))
                 return false;
-            this.functions.Add(func.id.ToLower(), new SymbolFunction(func, uniqueId));
+            this.functions.Add(func.id.ToLower(), new SymbolFunction(func, uniqueId,_params));
             reporte.nuevoSimbolo(uniqueId, "Funcion/Procedimiento", this.prop, line, column);
 
             return true;
@@ -101,6 +101,7 @@ namespace Traductor_Pascal_C3D.traductor.tablaSimbolos
 
         public SymbolStruct structExist(string id)
         {
+            Entorno actual = getGlobal();
             if(this.structs.ContainsKey(id.ToLower()))
                 return this.structs[id.ToLower()];
             return null;

@@ -66,6 +66,22 @@ namespace Traductor_Pascal_C3D.traductor.instruccion.funciones
                 foreach(Param param in _params)
                 {
                     nuevoEntorno.addVar(param.id, param.type, false, false,this.line,this.column);
+                    /*if (param.isRef)
+                    {
+                        //generator.addSetStack(nuevoEntorno.size++.ToString(), "1");
+                    }
+                    else
+                    {
+                        //generator.addSetStack(nuevoEntorno.size++.ToString(), "0");
+                    }*/
+                    /*if (param.isRef)
+                    {
+                        nuevoEntorno.addVar(param.id, param.type, false, false, this.line, this.column);
+                    }
+                    else
+                    {
+                        nuevoEntorno.addVar(param.id, param.type, false, false, this.line, this.column);
+                    }*/
                 }
                 generator.clearTempStorage();
                 generator.addStartFunc(symbolFunction.uniqueId, "void");

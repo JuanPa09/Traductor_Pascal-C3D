@@ -84,7 +84,7 @@ namespace Traductor_Pascal_C3D.traductor.variables
                 if (!this.sameType(this.type, value.type))
                 {
                     error = true;
-                    throw new ErroPascal(this.line, this.column, "Tipos De Datos Diferentes " + this.type + ", " + value.type, "Semántico");
+                    throw new ErroPascal(this.line, this.column, "Tipos De Datos Diferentes " + this.type.type + ", " + value.type.type, "Semántico");
                 }
                 this._value = value;
                 this.validateType(entorno);

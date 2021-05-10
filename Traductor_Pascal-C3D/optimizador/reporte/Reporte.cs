@@ -34,7 +34,7 @@ namespace Traductor_Pascal_C3D.optimizador.reporte
         public void realizarReporte()
         {
             string path = "C:\\compiladores2\\reporteOptimizaciones.html";
-            string reporte = "<html><title>Errores Lexicos</title><body><center><h1>Reporte De Errores</h1></center><br><br><center>";
+            string reporte = "<html><title>Reporte Optimización</title><body><center><h1>Reporte Optimización</h1></center><br><br><center>";
             reporte += "<table style=\"width: 100%\">";
             reporte += "<tr>";
             reporte += "<th style=\"border: 1px solid black; background-color:#DFC93F \">Tipo</th>";

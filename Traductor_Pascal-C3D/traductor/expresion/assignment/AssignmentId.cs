@@ -73,7 +73,7 @@ namespace Traductor_Pascal_C3D.traductor.expresion.assignment
                     if (symbolArray != null)
                         return new Retorno(temp, true, symbolArray.type);
                 }
-                return new Retorno(temp, true, ((Param)attribute[1]).type, new Simbolo(((Param)attribute[1]).type, this.id, (int)attribute[0], false, false, true));
+                return new Retorno(temp, true, ((Param)attribute[1]).type, new Simbolo(((Param)attribute[1]).type, this.id, ((int)attribute[0]).ToString(), false, false, true));
             }
         }
     }

@@ -61,20 +61,20 @@ namespace Traductor_Pascal_C3D.traductor.expresion.assignment
                 generador.addNextEnv(entorno.size);
                 generador.addCall(symFunc.uniqueId);
                 int i = 0;
-                string refVal = generador.newTemporal(); generador.freeTemp(refVal);
-                string refPos = generador.newTemporal();
                 generador.addComment("Pasando variables por referencia");
                 Dictionary<string, string> refValues = new Dictionary<string, string>();
                 foreach(Param _param in symFunc._params)
                 {
+                    string refVal = generador.newTemporal(); generador.freeTemp(refVal);
+                    string refPos = generador.newTemporal();
                     if (_param.isRef)
                     {
                         refPos = (entorno.size + i + 1).ToString();
                         generador.addGetStack(refVal,refPos);
-                        int posTarget = paramsValues.ElementAt(i).simbolo.position;
+                        string posTarget = paramsValues.ElementAt(i).simbolo.position;
                         refValues.Add(posTarget.ToString(), refVal);
                     }
-                    i += 0;
+                    i += 1;
                 }
                 generador.addComment("Terminan variables por referencia");
                 generador.addGetStack(temp, "p");
@@ -109,7 +109,78 @@ namespace Traductor_Pascal_C3D.traductor.expresion.assignment
                 retorno.falseLabel = this.falseLabel;
                 return retorno;
             }
+
+            /*if(anterior == null)
+            {
+                SymbolFunction symFunc = entorno.searchFunc(this.id);
+                if (symFunc == null)
+                    throw new ErroPascal(this.line, this.column, "No se encontro la funcion " + this.id, "Semantico");
+                LinkedList<Retorno> paramsValues = new LinkedList<Retorno>();
+                Generador generador = Generador.getInstance();
+                int size = generador.saveTemps(entorno);
+                foreach(Expresion param in @params)
+                {
+                    paramsValues.AddLast(param.compile(entorno));
+                }
+                //Cambio Simulado
+                string temp = generador.newTemporal(); generador.freeTemp(temp);
+                if (paramsValues.Count != 0)
+                {
+                    generador.addExpression(temp, "p", (entorno.size + 1).ToString(), "+");
+                    int index = 0;
+                    foreach(Retorno value in paramsValues)
+                    {
+                        if (isReferencia(symFunc._params, index))
+                        {
+
+                        }
+                        else
+                        {
+                            generador.addSetStack(temp, value.getValue());
+                        }
+                        if (index != paramsValues.Count - 1)
+                            generador.addExpression(temp, temp, "1", "+");
+                    }
+                }
+                generador.addNextEnv(entorno.size);
+                generador.addCall(symFunc.uniqueId);
+                generador.addGetStack(temp, "p");
+                generador.addAntEnv(entorno.size);
+                generador.recoverTemps(entorno,size);
+                generador.addTemp(temp);
+
+                if (symFunc.type.type != Types.BOOLEAN) return new Retorno(temp, true, symFunc.type);
+
+                Retorno retorno = new Retorno("", false, symFunc.type);
+                this.trueLabel = this.trueLabel == "" ? generador.newLabel() : this.trueLabel;
+                this.falseLabel = this.falseLabel == "" ? generador.newLabel() : this.falseLabel;
+                generador.addIf(temp, "1", "==", this.trueLabel);
+                generador.addGoto(this.falseLabel);
+                retorno.trueLabel = this.trueLabel;
+                retorno.falseLabel = this.falseLabel;
+                return retorno;
+
+            }*/
+
             throw new ErroPascal(this.line, this.column, "Funcion no implementada", "Semantico");
         }
+
+
+        public bool isReferencia(LinkedList<Param> parametros,int index)
+        {
+            int i = 0;
+            foreach(Param parametro in parametros)
+            {
+                if (i == index)
+                {
+                    if (parametro.isRef)
+                        return true;
+                    return false;
+                }
+                i++;
+            }
+            return false;
+        }
+
     }
 }

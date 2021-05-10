@@ -35,7 +35,14 @@ namespace Traductor_Pascal_C3D.traductor.expresion.aritmetica
                     switch (_right.type.type){
                         case Types.NUMBER:
                         case Types.DOUBLE:
-                            generador.addExpression(temp, _left.getValue(), _right.getValue(), this.operador.ToString());
+                            if (this.operador == 'd')
+                            {
+                                generador.addExpression(temp, "(int)(" + _left.getValue(), _right.getValue()+")", "/");
+                            }
+                            else
+                            {
+                                generador.addExpression(temp, _left.getValue(), _right.getValue(), this.operador.ToString());
+                            }
                             return new Retorno(temp, true, _right.type.type == Types.DOUBLE ? _right.type : _left.type);
                         case Types.STRING:
                             string tempAux = generador.newTemporal();

@@ -93,6 +93,7 @@ namespace Traductor_Pascal_C3D.analizador
             #region Gramatica
             INICIO.Rule
                                 = ENCABEZADO + ELEMENTOS
+                                | ELEMENTOS
                                 ;
 
             ELEMENTOS.Rule

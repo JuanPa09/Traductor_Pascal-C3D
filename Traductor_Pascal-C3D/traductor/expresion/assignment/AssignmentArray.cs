@@ -58,18 +58,21 @@ namespace Traductor_Pascal_C3D.traductor.expresion.assignment
                 conteo = 1;
                 generador.addGetHeap(tempAux, puntero);
                 generador.addExpression(puntero, puntero, "1", "+");
+                generador.addComment("Valor Minimo");
                 generador.addExpression(min, tempAux);
                 generador.addGetHeap(tempAux, puntero);
                 generador.addExpression(puntero, puntero, "1", "+");
+                generador.addComment("Valor Maximo");
                 generador.addExpression(max, tempAux);
-                if (val.isTemp)
+                /*if (val.isTemp)
                 {
                     generador.addGetStack(tempIndex, val.value);
                 }
                 else
                 {
                     generador.addExpression(tempIndex, val.value);
-                }
+                }*/
+                generador.addExpression(tempIndex, val.value);
                 generador.addExpression(temp, tempIndex, min, "-");
 
             }
@@ -77,6 +80,7 @@ namespace Traductor_Pascal_C3D.traductor.expresion.assignment
             generador.addExpression(tempAux, indices.Count.ToString(), "2", "*");
             generador.addExpression(tempAux, tempAux, "1", "+");
             generador.addExpression(temp, temp, tempAux, "+");
+            //generador.addCode("/*Temporal de salida*/\nprintf(\"%d\",(int)" + temp + ");printf(\"%c\",10);\n/*******/\n");
             generador.addComment("Termina Acceso A Array");
 
             return new Retorno(temp,true, new utils.Type(anterior.type.type, anterior.type.typeId, null, anterior.type.dimension));

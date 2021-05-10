@@ -14,7 +14,7 @@ namespace Traductor_Pascal_C3D.traductor.tablaSimbolos
         int size;
         public LinkedList<Param> _params;
 
-        public SymbolFunction(FunctionSt func, string uniqueId)
+        public SymbolFunction(FunctionSt func, string uniqueId, LinkedList<Param> _params = null)
         {
             this.type = func.type;
             this.id = func.id;
